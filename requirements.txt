@@ -1,0 +1,16 @@
+torch>=2.6.0
+torchvision>=0.21.0
+segmentation-models-pytorch>=0.3.4
+timm>=0.9.7
+opencv-python>=4.8.0.74
+numpy>=1.26.0
+Pillow>=10.0.0
+scikit-image>=0.21.0
+fastapi>=0.104.1
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+reportlab>=4.0.7
+pytest>=7.4.3
+Flask>=3.0.0
+flask-cors>=4.0.0
+

@@ -1,0 +1,51 @@
+# Environment
+venv/
+env/
+.venv/
+python_runtime/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data
+uploads/*
+outputs/annotated/*
+outputs/reports/*
+*.pth
+*.pt
+!model/best_model.pth
+
+# Logs
+*.log
+debug-logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node (for frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+test_ct_image.png

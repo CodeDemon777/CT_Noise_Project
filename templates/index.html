@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungCT AI - Noise Classification & Severity Analysis</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for AI Performance Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#cyan-blue-grad)"/>
+                    <defs>
+                        <linearGradient id="cyan-blue-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#48CAE4"/>
+                            <stop offset="100%" stop-color="#0077B6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">LungCT <span class="accent-text">AI</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#analyze" class="nav-link btn-nav-cta">Analyze CT</a>
+                <a href="#performance" class="nav-link">AI Metrics</a>
+                <a href="#model-info" class="nav-link">Model Spec</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 1. Hero Section -->
+    <section id="hero" class="section hero-section">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="tagline">COMMERCIAL-GRADE HEALTHCARE AI</div>
+                <h1 class="hero-title">AI-Powered Lung CT Noise Analysis System</h1>
+                <p class="hero-subtitle">Detect, classify and quantify multiple noise types in lung CT images using advanced U-Net++ deep learning segmentation.</p>
+                <div class="hero-actions">
+                    <a href="#analyze" class="btn btn-primary">Analyze CT Image</a>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-wrapper">
+                    <!-- High-tech animated clinical visual -->
+                    <svg viewBox="0 0 400 400" fill="none" class="animated-neural-svg" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="200" cy="200" r="160" stroke="#0077B6" stroke-width="1.5" stroke-dasharray="8 8" class="rotator"/>
+                        <circle cx="200" cy="200" r="120" stroke="#48CAE4" stroke-width="0.75" class="rotator-reverse"/>
+                        
+                        <!-- Neural nodes -->
+                        <g class="neural-network">
+                            <!-- Outer circles/nodes -->
+                            <circle cx="100" cy="150" r="8" fill="#48CAE4" class="pulse-node-1"/>
+                            <circle cx="100" cy="250" r="8" fill="#48CAE4" class="pulse-node-2"/>
+                            <circle cx="200" cy="100" r="10" fill="#0077B6" class="pulse-node-3"/>
+                            <circle cx="200" cy="300" r="10" fill="#0077B6" class="pulse-node-4"/>
+                            <circle cx="300" cy="150" r="8" fill="#48CAE4" class="pulse-node-5"/>
+                            <circle cx="300" cy="250" r="8" fill="#48CAE4" class="pulse-node-6"/>
+                            <circle cx="200" cy="200" r="16" fill="#03045E" stroke="#48CAE4" stroke-width="2" class="center-node"/>
+                            
+                            <!-- Synapses / Connection lines -->
+                            <line x1="100" y1="150" x2="200" y2="100" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="100" y1="250" x2="200" y2="300" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="100" y1="150" x2="200" y2="200" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="100" y1="250" x2="200" y2="200" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="100" x2="300" y2="150" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="200" y1="300" x2="300" y2="250" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="200" y1="200" x2="300" y2="150" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="200" x2="300" y2="250" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="100" x2="200" y2="200" stroke="#0077B6" stroke-width="1" opacity="0.5"/>
+                            <line x1="200" y1="300" x2="200" y2="200" stroke="#0077B6" stroke-width="1" opacity="0.5"/>
+                        </g>
+
+                        <!-- Scanning line -->
+                        <line x1="40" y1="200" x2="360" y2="200" stroke="#00F0FF" stroke-width="2.5" class="scan-beam" opacity="0.75"/>
+                    </svg>
+                    <!-- Floating Stat Badge -->
+                    <div class="hero-badge">
+                        <div class="badge-icon">🔬</div>
+                        <div class="badge-info">
+                            <div class="badge-num">98.86%</div>
+                            <div class="badge-label">Dice Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. About Project Section -->
+    <section id="about" class="section about-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">About The Platform</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                    </div>
+                    <h3>What is Lung CT Imaging?</h3>
+                    <p>Lung Computed Tomography (CT) generates high-resolution transverse slice imagery of the thorax, mapping tissue density variations to identify tumors, infections, and interstitial lung diseases.</p>
+                </div>
+                
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3>Why Noise Matters?</h3>
+                    <p>Electronic systems add Gaussian noise, while photon starvation causes Poisson shot noise. These artifacts degrade signal quality, mask fine anatomical anomalies, and compromise automated clinical diagnostic accuracy.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3>AI Denoising Solution</h3>
+                    <p>Our solution utilizes a customized U-Net++ architecture to perform pixel-level segmentation, detecting noise regions, classifying them by source, and generating quantitative severity estimations.</p>
+                </div>
+            </div>
+
+            <div class="tech-stack-showcase">
+                <span class="tech-title">TECHNOLOGIES INCORPORATED:</span>
+                <div class="tech-badges">
+                    <span class="tech-badge">U-Net++</span>
+                    <span class="tech-badge">PyTorch</span>
+                    <span class="tech-badge">OpenCV</span>
+                    <span class="tech-badge">Computer Vision</span>
+                    <span class="tech-badge">Deep Learning</span>
+                    <span class="tech-badge">Flask API</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Features Section -->
+    <section id="features" class="section features-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">System Features</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h4>Upload Lung CT</h4>
+                    <p>Direct support for DICOM conversion formats, PNG, BMP, or JPEG. Intuitive drag-and-drop client interface.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Multi-Noise Detection</h4>
+                    <p>Simultaneous profiling of Gaussian (additive thermal sensor) and Poisson (quantized quantum photons) artifacts.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h4>Pixel-Level Segmentation</h4>
+                    <p>High-fidelity spatial identification maps indicating exactly which pixels are compromised by noise.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Severity Estimation</h4>
+                    <p>Calculates precise percentage area maps for each noise class, matching standard clinical metrics.</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🖼️</div>
+                    <h4>Bounding Box Visualization</h4>
+                    <p>Generates high-contrast visual cues (red boxes for Gaussian, blue for Poisson) on the CT scan viewport.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h4>AI-Powered Analysis</h4>
+                    <p>Uses deep learning representations validated via training parameters to verify structural scanning safety.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Upload & Analysis Section -->
+    <section id="analyze" class="section upload-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">Diagnostic Center</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Submit a thoracic CT scan slice to invoke U-Net++ inference and compute regional noise metrics.</p>
+            </div>
+
+            <div class="upload-wrapper">
+                <div class="upload-area" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*" class="file-hidden">
+                    <div class="upload-instructions">
+                        <svg class="upload-cloud-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                        </svg>
+                        <p class="upload-text-main">Drag & Drop Thoracic CT Image Here</p>
+                        <p class="upload-text-sub">Supports PNG, JPEG, BMP formats (recommended size: 512x512)</p>
+                        <button type="button" class="btn btn-secondary btn-small" id="browse-btn">Browse Local Files</button>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="preview-area hidden" id="preview-container">
+                    <div class="preview-card">
+                        <div class="preview-title">Loaded CT Image</div>
+                        <img id="image-preview" src="#" alt="CT Preview" class="ct-preview-img">
+                        <div class="preview-info" id="preview-metadata">File Size: - | Dimension: -</div>
+                        
+                        <div class="action-row">
+                            <button class="btn btn-primary" id="analyze-btn">Start AI Denoise Analysis</button>
+                            <button class="btn btn-danger-outline" id="clear-btn">Remove Image</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Progress Steps (Dynamic) -->
+            <div class="analysis-progress hidden" id="analysis-progress">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="step" id="step-upload">
+                        <span class="step-num">1</span>
+                        <span class="step-label">Upload Scan</span>
+                    </div>
+                    <div class="step" id="step-model">
+                        <span class="step-num">2</span>
+                        <span class="step-label">Model Inference (U-Net++)</span>
+                    </div>
+                    <div class="step" id="step-classification">
+                        <span class="step-num">3</span>
+                        <span class="step-label">Noise Classification</span>
+                    </div>
+                    <div class="step" id="step-severity">
+                        <span class="step-num">4</span>
+                        <span class="step-label">Severity Analysis</span>
+                    </div>
+                    <div class="step" id="step-visual">
+                        <span class="step-num">5</span>
+                        <span class="step-label">Visualization Overlay</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Demo Helper -->
+            <div class="demo-helper">
+                <p>Don't have a CT scan handy? <button class="btn-link" id="demo-generate-btn">Generate and Load Realistic CT Scan</button> to test the system instantly!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Panel Wrapper (Includes 5, 6, and 10) -->
+    <div id="results-panel" class="results-panel-wrapper hidden">
+        
+        <!-- 5. Results Dashboard -->
+        <section class="section results-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Diagnostic Results Dashboard</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Original Panel -->
+                    <div class="result-viewport-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Original CT Image</span>
+                            <span class="viewport-tag tag-normal">RAW SCAN</span>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="result-original-img" src="#" alt="Original CT" class="viewport-img">
+                        </div>
+                    </div>
+
+                    <!-- Annotated Panel -->
+                    <div class="result-viewport-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Annotated CT View</span>
+                            <div class="viewport-options">
+                                <button class="btn-toggle active" id="toggle-box-btn">Bounding Box</button>
+                                <button class="btn-toggle" id="toggle-overlay-btn">Mask Overlay</button>
+                            </div>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="result-annotated-img" src="#" alt="Annotated CT" class="viewport-img">
+                            <img id="result-overlay-img" src="#" alt="Overlay CT" class="viewport-img hidden">
+                        </div>
+                        <div class="viewport-totals-section" id="viewport-totals-section">
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-red"></span>
+                                <span class="total-label">Gaussian Noise:</span>
+                                <span class="total-val" id="viewport-val-gaussian">0.00%</span>
+                                <span class="severity-badge" id="viewport-badge-gaussian">None</span>
+                            </div>
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-blue"></span>
+                                <span class="total-label">Poisson Noise:</span>
+                                <span class="total-val" id="viewport-val-poisson">0.00%</span>
+                                <span class="severity-badge" id="viewport-badge-poisson">None</span>
+                            </div>
+                        </div>
+                        <div class="viewport-regions-section" id="regions-list-section">
+                            <div class="regions-header">Detected Noise Regions</div>
+                            <div class="regions-list-wrapper">
+                                <ul id="regions-list" class="regions-list">
+                                    <li class="no-regions">No noise regions detected.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="viewport-footer">
+                            <div class="legend-item"><span class="legend-dot color-red"></span> Gaussian Box</div>
+                            <div class="legend-item"><span class="legend-dot color-blue"></span> Poisson Box</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Severity Analysis Dashboard -->
+        <section class="section severity-dashboard">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Severity Assessment</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="severity-cards">
+                    <!-- Gaussian Card -->
+                    <div class="severity-card hover-glow">
+                        <div class="card-head">
+                            <span class="noise-type">Gaussian Noise</span>
+                            <span class="severity-badge" id="badge-gaussian">Mild</span>
+                        </div>
+                        <div class="card-val" id="val-gaussian">12.50%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-red" id="bar-gaussian" style="width: 12.5%;"></div>
+                        </div>
+                        <p class="card-description">Represents additive electronic sensor noise. Highly concentrated in low-density tissues.</p>
+                    </div>
+
+                    <!-- Poisson Card -->
+                    <div class="severity-card hover-glow">
+                        <div class="card-head">
+                            <span class="noise-type">Poisson Noise</span>
+                            <span class="severity-badge" id="badge-poisson">Mild</span>
+                        </div>
+                        <div class="card-val" id="val-poisson">4.80%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-blue" id="bar-poisson" style="width: 4.8%;"></div>
+                        </div>
+                        <p class="card-description">Indicates photon shot noise caused by reduced radiation dose. Prominent in scattering zones.</p>
+                    </div>
+
+                    <!-- Combined Card -->
+                    <div class="severity-card hover-glow highlight-card">
+                        <div class="card-head">
+                            <span class="noise-type text-light">Total Denoising Required</span>
+                            <span class="severity-badge badge-highlight" id="badge-total">Moderate</span>
+                        </div>
+                        <div class="card-val text-light" id="val-total">17.30%</div>
+                        <div class="progress-track track-light">
+                            <div class="progress-fill fill-cyan" id="bar-total" style="width: 17.3%;"></div>
+                        </div>
+                        <p class="card-description text-dim">Cumulative scanning pixels impacted by noise artifacts. Evaluates total slice diagnostic viability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Download Report Section -->
+        <section class="section report-section">
+            <div class="container text-center">
+                <div class="report-box glass-card">
+                    <div class="report-icon-container">
+                        <svg class="report-big-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <h3>Denoising Report Generation</h3>
+                    <p class="report-lead">Prepare and download a PDF report containing original scans, segmented regions, metric tables and radiologist diagnostic recommendations.</p>
+                    <button class="btn btn-primary btn-large" id="download-report-btn">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download PDF Clinical Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 7. AI Performance Dashboard -->
+    <section id="performance" class="section performance-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">AI Performance & Validation Metrics</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Training metrics and validation curves for the deployed U-Net++ network demonstrating accuracy targets.</p>
+            </div>
+
+            <!-- Key metrics cards -->
+            <div class="metrics-grid">
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9886</div>
+                    <div class="metric-num-label">Dice Coefficient</div>
+                    <div class="metric-num-desc">Overlapping area accuracy</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9778</div>
+                    <div class="metric-num-label">Intersection over Union (IoU)</div>
+                    <div class="metric-num-desc">Jaccard index target</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9899</div>
+                    <div class="metric-num-label">Precision</div>
+                    <div class="metric-num-desc">Positive predictive integrity</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9875</div>
+                    <div class="metric-num-label">Recall</div>
+                    <div class="metric-num-desc">Sensitivity coverage</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9887</div>
+                    <div class="metric-num-label">F1-Score</div>
+                    <div class="metric-num-desc">Harmonic mean parameter</div>
+                </div>
+            </div>
+
+            <!-- Validation Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h5>Model Denoising Loss Curves</h5>
+                    <div class="chart-wrapper">
+                        <canvas id="lossChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h5>Segmentation Metrics (Dice / IoU)</h5>
+                    <div class="chart-wrapper">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. AI Model Information -->
+    <section id="model-info" class="section model-info-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">AI Network Specifications</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="model-info-wrapper">
+                <div class="model-spec-card">
+                    <h3>U-Net++ Network Details</h3>
+                    <div class="spec-table">
+                        <div class="spec-row">
+                            <span class="spec-label">Model Architecture:</span>
+                            <span class="spec-val font-code">U-Net++ (Nested UNet)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Backbone Encoder:</span>
+                            <span class="spec-val font-code">ResNet18 (Pretrained check)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Deep Learning Framework:</span>
+                            <span class="spec-val">PyTorch (v2.0+)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Input Dimensions:</span>
+                            <span class="spec-val font-code">512 × 512 × 1 (Grayscale CT slice)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Output Classes:</span>
+                            <span class="spec-val">3 (Clean, Gaussian, Poisson)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Classification Mode:</span>
+                            <span class="spec-val">Multi-class Semantic Segmentation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-desc-card">
+                    <h3>Purpose and Design</h3>
+                    <p class="model-purpose-text">
+                        The specialized U-Net++ segmenter is designed to accurately classify scan noise and estimate pixel-level severity for CT reconstruction quality verification.
+                    </p>
+                    <p class="model-body-text">
+                        Nested dense skip pathways connect the encoder and decoder sub-networks, reducing semantic gaps between corresponding feature maps. This allows the model to detect tiny localized Gaussian sensor noise clusters and faint Poisson radiation fluctuations across the lung tissue space with minimal false positive classifications.
+                    </p>
+                    <div class="info-alert">
+                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-text">Warning: Denoising algorithms should be reviewed alongside raw scans to preserve fine anatomical boundaries.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. System Workflow Section -->
+    <section class="section workflow-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">System Workflow Pipeline</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <!-- Workflow Flowchart -->
+            <div class="workflow-flow">
+                <!-- Step 1 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📤</div>
+                    <div class="flow-title">Upload CT</div>
+                    <p class="flow-desc">Upload raw slice (PNG/JPEG)</p>
+                </div>
+                
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 2 -->
+                <div class="flow-step">
+                    <div class="flow-icon">⚙️</div>
+                    <div class="flow-title">Preprocessing</div>
+                    <p class="flow-desc">Resize (512x512) and normalize</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 3 -->
+                <div class="flow-step">
+                    <div class="flow-icon">🧠</div>
+                    <div class="flow-title">U-Net++ Model</div>
+                    <p class="flow-desc">Execute multi-class segmentation</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 4 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📍</div>
+                    <div class="flow-title">Noise Segmentation</div>
+                    <p class="flow-desc">Isolate artifact regions</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 5 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📊</div>
+                    <div class="flow-title">Severity Estimation</div>
+                    <p class="flow-desc">Compute percent area mapping</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 6 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📦</div>
+                    <div class="flow-title">Bounding Box</div>
+                    <p class="flow-desc">Draw outlines and labels</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 7 -->
+                <div class="flow-step">
+                    <div class="flow-icon">🖥️</div>
+                    <div class="flow-title">Results Dashboard</div>
+                    <p class="flow-desc">Serve annotated CT & charts</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. Footer -->
+    <footer class="app-footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-logo">LungCT <span>AI</span></div>
+                <p class="footer-sub">Multi-Noise Classification & Severity Analysis System</p>
+                <p class="footer-desc">A professional Software Engineering Capstone Project leveraging deep learning architectures to assist clinical imaging quality assessment.</p>
+            </div>
+            
+            <div class="footer-right">
+                <div class="footer-group">
+                    <h5>Technologies Deployed</h5>
+                    <ul>
+                        <li>PyTorch & U-Net++</li>
+                        <li>Flask & Python</li>
+                        <li>OpenCV & NumPy</li>
+                        <li>ReportLab PDF</li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h5>Educational Purposes</h5>
+                    <p class="disclaimer-note">Developed for educational and academic research. Model predictions should be clinically cross-referenced with medical imaging hardware.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LungCT AI. Software Engineering Capstone Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
