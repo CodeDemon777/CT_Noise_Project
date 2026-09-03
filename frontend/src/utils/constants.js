@@ -1,12 +1,31 @@
-export const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+export const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL || '';
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('LUNGCT_BACKEND_URL');
+    if (custom) return custom.replace(/\/+$/, '');
+  }
+  return '';
+};
+
+export const setApiBaseUrl = (url) => {
+  if (typeof window !== 'undefined') {
+    if (url) {
+      localStorage.setItem('LUNGCT_BACKEND_URL', url.trim().replace(/\/+$/, ''));
+    } else {
+      localStorage.removeItem('LUNGCT_BACKEND_URL');
+    }
+  }
+};
 
 export const resolveApiUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:') || path.startsWith('data:')) {
     return path;
   }
+  const baseUrl = getApiBaseUrl();
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${API_BASE_URL}${cleanPath}`;
+  return `${baseUrl}${cleanPath}`;
 };
 
 export const MODELS_CONFIG = {
