@@ -3,12 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
-dist/
-build/
 venv/
 env/
 .venv/
 python_runtime/
+
+# Node & Frontend Build
+node_modules/
+frontend/node_modules/
+dist/
+build/
+.npm/
 
 # Testing & Linting
 .pytest_cache/
@@ -42,6 +47,5 @@ backend/static/reports/*
 !backend/static/outputs_m3/.gitkeep
 !backend/static/outputs_m4/.gitkeep
 !backend/static/reports/.gitkeep
-
-# Track all model checkpoints for hosting
-!backend/models/**/*.pth
+outputs/*
+!outputs/.gitkeep

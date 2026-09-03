@@ -9,6 +9,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, render_template, send_file, send_from_directory
 from flask_cors import CORS
 
@@ -57,8 +58,58 @@ app = Flask(
     template_folder=str(FRONTEND_DIR)
 )
 
+# Security Configuration: 32MB Max Upload Limit
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
+
 # Enable Cross-Origin Resource Sharing
 CORS(app)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp', 'tif', 'tiff', 'dcm'}
+
+def is_safe_image_file(filename: str) -> bool:
+    if '.' not in filename:
+        return False
+    ext = filename.rsplit('.', 1)[1].lower()
+    return ext in ALLOWED_EXTENSIONS
+
+def sanitize_and_save_upload(file):
+    """
+    Sanitizes, validates, and saves uploaded CT images safely with integrity verification.
+    """
+    if not file or not file.filename:
+        return None, "No file uploaded or filename is empty."
+
+    clean_name = secure_filename(file.filename)
+    if not clean_name:
+        clean_name = f"ct_scan_{abs(hash(file.filename)) % 100000}.png"
+
+    if not is_safe_image_file(clean_name):
+        return None, f"Unsupported file type. Allowed medical image extensions: {', '.join(ALLOWED_EXTENSIONS)}"
+
+    dest_path = UPLOADS_DIR / clean_name
+    file.save(str(dest_path))
+
+    # Verify image integrity via OpenCV
+    img = cv2.imread(str(dest_path), cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        if dest_path.exists():
+            dest_path.unlink()
+        return None, "Corrupted or non-decodable medical image payload."
+
+    return clean_name, None
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    return jsonify({"error": "Payload Too Large. Maximum allowed CT scan size is 32MB."}), 413
 
 MODEL_PATH = BACKEND_DIR / "models" / "model1" / "best_model.pth"
 MODEL2_PATH = BACKEND_DIR / "models" / "model2" / "Joshna.pth"
@@ -123,9 +174,17 @@ except Exception as e:
 @app.route("/")
 def index():
     """
-    Renders the main clinical dashboard landing page from frontend/.
+    Renders the main clinical dashboard landing page from frontend/ (or built React SPA from frontend/dist).
     """
+    dist_index = FRONTEND_DIR / "dist" / "index.html"
+    if dist_index.exists():
+        return send_file(str(dist_index))
     return send_file(str(FRONTEND_DIR / "index.html"))
+
+
+@app.route("/assets/<path:filename>")
+def serve_assets(filename):
+    return send_from_directory(str(FRONTEND_DIR / "dist" / "assets"), filename)
 
 
 @app.route("/css/<path:filename>")
@@ -180,6 +239,83 @@ def health():
         "model2_loaded": model2_loaded,
         "model3_loaded": model3_loaded,
         "model4_loaded": model4_loaded,
+    })
+
+
+@app.route("/api", methods=["GET"])
+@app.route("/api/v1", methods=["GET"])
+def api_docs():
+    """
+    Returns complete OpenAPI / REST API documentation for all deployed endpoints.
+    """
+    return jsonify({
+        "name": "LungCT AI REST API",
+        "version": "2.0.0",
+        "description": "Multi-Model CT Noise Classification, Severity Quantification & PDF Reporting Engine",
+        "endpoints": {
+            "GET /health": {
+                "description": "System health check and status of all 4 deep learning models",
+                "returns": "JSON object with status, model loading states, and class definitions"
+            },
+            "POST /upload": {
+                "description": "Upload a raw CT scan slice image",
+                "content_type": "multipart/form-data",
+                "body": {"file": "Binary image file (PNG/JPEG/BMP)"},
+                "returns": "JSON with uploaded filename and static preview URL"
+            },
+            "POST /predict": {
+                "alias": "POST /predict/model1",
+                "description": "Execute Model 1 (U-Net++) inference for Gaussian and Poisson noise segmentation",
+                "content_type": "multipart/form-data",
+                "body": {"file": "Binary image file"},
+                "returns": "JSON with pixel counts, percentage coverage, severity levels, bounding boxes, and image URLs"
+            },
+            "POST /predict/model2": {
+                "description": "Execute Model 2 (Attention U-Net) inference for Poisson and Speckle noise segmentation",
+                "content_type": "multipart/form-data",
+                "body": {"file": "Binary image file"},
+                "returns": "JSON with Attention-gated masks, overlays, and severity breakdown"
+            },
+            "POST /predict/model3": {
+                "description": "Execute Model 3 (DeepLabV3+ ASPP) inference for Salt & Pepper and RVIN noise segmentation",
+                "content_type": "multipart/form-data",
+                "body": {"file": "Binary image file"},
+                "returns": "JSON with ASPP multi-scale impulse masks, overlays, and severity metrics"
+            },
+            "POST /predict/model4": {
+                "description": "Execute Model 4 (NoiseCNN) inference for Quantization and Periodic noise classification",
+                "content_type": "multipart/form-data",
+                "body": {"file": "Binary image file"},
+                "returns": "JSON with softmax probabilities, confidence score, and 2D FFT Fourier spectrum image URL"
+            },
+            "GET /demo/model1": {
+                "alias": "GET /demo",
+                "description": "Synthesize a realistic CT scan phantom with Gaussian/Poisson noise and run Model 1"
+            },
+            "GET /demo/model2": {
+                "description": "Synthesize a CT phantom with Poisson/Speckle noise and run Model 2 (Attention U-Net)"
+            },
+            "GET /demo/model3": {
+                "description": "Synthesize a CT phantom with Salt & Pepper/RVIN noise and run Model 3 (DeepLabV3+)"
+            },
+            "GET /demo/model4": {
+                "description": "Synthesize a CT phantom with Quantization/Periodic noise and run Model 4 (NoiseCNN)"
+            },
+            "GET /report": {
+                "description": "Generate and download a clinical ReportLab PDF report for any diagnosed scan",
+                "query_params": {
+                    "filename": "Required. Original filename (e.g. scan.png)",
+                    "model": "Optional. 'model1', 'model2', 'model3', or 'model4' (default: 'model1')"
+                },
+                "returns": "Downloadable application/pdf file stream"
+            },
+            "POST /batch": {
+                "description": "Batch inference pipeline for multiple CT images",
+                "content_type": "multipart/form-data",
+                "body": {"files": "Array of image files"},
+                "returns": "JSON list of inference results per image"
+            }
+        }
     })
 
 
