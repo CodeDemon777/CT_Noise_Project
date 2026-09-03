@@ -6,14 +6,20 @@ from .model import DeepLabV3Plus
 
 def load_model3(model_path: str, device: str = "cpu") -> DeepLabV3Plus:
     """
-    Load Model 3 (DeepLabV3+ — Jahnavi) checkpoint with ultra-low RAM footprint.
+    Load Model 3 (DeepLabV3+ — Jahnavi) checkpoint with zero-copy memory mapping.
     """
     path = Path(model_path)
     if not path.exists():
         raise FileNotFoundError(f"Model 3 checkpoint not found: {path}")
 
     model = DeepLabV3Plus(num_classes=3)
-    checkpoint = torch.load(str(path), map_location="cpu", weights_only=False)
+    try:
+        checkpoint = torch.load(str(path), map_location="cpu", mmap=True, weights_only=False)
+    except Exception:
+        try:
+            checkpoint = torch.load(str(path), map_location="cpu", weights_only=False)
+        except Exception:
+            checkpoint = torch.load(str(path), map_location="cpu")
 
     if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
         state_dict = checkpoint["model_state_dict"]

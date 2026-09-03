@@ -12,7 +12,7 @@ from .model import AttentionUNet
 
 def load_model2(model_path: str, device: str = None) -> torch.nn.Module:
     """
-    Load the Attention U-Net model checkpoint with ultra-low RAM footprint.
+    Load the Attention U-Net model checkpoint with zero-copy memory mapping.
     """
     if device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -24,11 +24,14 @@ def load_model2(model_path: str, device: str = None) -> torch.nn.Module:
     if not path.exists():
         raise FileNotFoundError(f"Model 2 checkpoint not found at: {model_path}")
 
-    # Load checkpoint safely
+    # Load checkpoint safely with zero-copy mmap
     try:
-        checkpoint = torch.load(str(path), map_location="cpu", weights_only=False)
+        checkpoint = torch.load(str(path), map_location="cpu", mmap=True, weights_only=False)
     except Exception:
-        checkpoint = torch.load(str(path), map_location="cpu")
+        try:
+            checkpoint = torch.load(str(path), map_location="cpu", weights_only=False)
+        except Exception:
+            checkpoint = torch.load(str(path), map_location="cpu")
 
     # Unwrap state_dict if contained inside dictionary wrapper
     if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
