@@ -1,51 +1,47 @@
-# Environment
+# Python Bytecode & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
 venv/
 env/
 .venv/
 python_runtime/
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Data
-uploads/*
-outputs/annotated/*
-outputs/reports/*
-*.pth
-*.pt
-!model/best_model.pth
-
-# Logs
-*.log
-debug-logs/
-
-# Testing
+# Testing & Linting
 .pytest_cache/
 .coverage
 htmlcov/
 
-# Node (for frontend)
-frontend/node_modules/
-frontend/dist/
-frontend/.env.local
-frontend/.env
-
-# Environment variables
-.env
-.env.local
-
-# Temporary files
+# Logs & Temporary Files
+*.log
 *.tmp
 *.temp
-test_ct_image.png
+debug-logs/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Server runtime uploads & generated reports (keep directories, ignore runtime outputs)
+backend/static/uploads/*
+backend/static/outputs/*
+backend/static/outputs_m2/*
+backend/static/outputs_m3/*
+backend/static/outputs_m4/*
+backend/static/reports/*
+!backend/static/uploads/.gitkeep
+!backend/static/outputs/.gitkeep
+!backend/static/outputs_m2/.gitkeep
+!backend/static/outputs_m3/.gitkeep
+!backend/static/outputs_m4/.gitkeep
+!backend/static/reports/.gitkeep
+
+# Track all model checkpoints for hosting
+!backend/models/**/*.pth

@@ -1,0 +1,76 @@
+{
+  "dataset_source": "dataset/ground_truth_train/ground_truth_train_000.hdf5",
+  "slice_index": 64,
+  "device": "cpu",
+  "models": {
+    "model1_unet": {
+      "architecture": "UNet",
+      "noise_types": [
+        "Gaussian",
+        "Poisson"
+      ],
+      "gaussian_pct": 95.5,
+      "gaussian_level": "Critical",
+      "poisson_pct": 0.58,
+      "poisson_level": "Mild",
+      "total_pct": 96.08,
+      "total_level": "Critical",
+      "annotated_artifact": "outputs\\dataset_test_verification\\m1_annotated.png"
+    },
+    "model2_attention_unet": {
+      "architecture": "Attention U-Net",
+      "noise_types": [
+        "Poisson",
+        "Speckle"
+      ],
+      "poisson_pct": 15.47,
+      "poisson_level": "CRITICAL",
+      "speckle_pct": 2.4,
+      "speckle_level": "MODERATE",
+      "total_pct": 17.87,
+      "total_level": "CRITICAL",
+      "annotated_artifact": "outputs\\dataset_test_verification\\m2_annotated.png"
+    },
+    "model3_deeplabv3plus": {
+      "architecture": "DeepLabV3+",
+      "noise_types": [
+        "Salt & Pepper",
+        "RVIN"
+      ],
+      "salt_pepper_pct": 7.64,
+      "salt_pepper_level": "MODERATE",
+      "rvin_pct": 3.22,
+      "rvin_level": "MILD",
+      "total_pct": 10.87,
+      "total_level": "MODERATE",
+      "annotated_artifact": "outputs\\dataset_test_verification\\m3_annotated.png"
+    },
+    "model4_noisecnn": {
+      "architecture": "NoiseCNN",
+      "noise_types": [
+        "Quantization",
+        "Periodic"
+      ],
+      "quantization_test": {
+        "predicted_class": "Quantization Noise",
+        "confidence": 81.77,
+        "probs": {
+          "clean": 0.02751539833843708,
+          "quantization": 0.8176747560501099,
+          "periodic": 0.1548098772764206
+        },
+        "artifact": "outputs\\dataset_test_verification\\m4_quant_annotated.png"
+      },
+      "periodic_test": {
+        "predicted_class": "Periodic Noise",
+        "confidence": 100.0,
+        "probs": {
+          "clean": 4.45068426557782e-10,
+          "quantization": 2.9508125720667522e-08,
+          "periodic": 1.0
+        },
+        "artifact": "outputs\\dataset_test_verification\\m4_periodic_annotated.png"
+      }
+    }
+  }
+}

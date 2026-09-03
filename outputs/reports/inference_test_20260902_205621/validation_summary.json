@@ -1,0 +1,86 @@
+{
+  "model_path": "D:\\Downloads\\CT_Noise_Project - Copy\\model\\best_model.pth",
+  "input_image": "D:\\Downloads\\CT_Noise_Project - Copy\\test_ct_image.png",
+  "device": "cpu",
+  "gaussian_sigma": 18.0,
+  "poisson_scale": 1.0,
+  "results": [
+    {
+      "case": "clean_ct",
+      "image_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\clean_ct.png",
+      "pred_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\clean_ct_pred.png",
+      "unique_classes": [
+        0,
+        1,
+        2
+      ],
+      "counts": {
+        "clean": 1332,
+        "gaussian": 260809,
+        "poisson": 3
+      },
+      "percentages": {
+        "clean": 0.51,
+        "gaussian": 99.49,
+        "poisson": 0.0
+      }
+    },
+    {
+      "case": "gaussian_ct",
+      "image_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\gaussian_ct.png",
+      "pred_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\gaussian_ct_pred.png",
+      "unique_classes": [
+        0,
+        1
+      ],
+      "counts": {
+        "clean": 1,
+        "gaussian": 262143,
+        "poisson": 0
+      },
+      "percentages": {
+        "clean": 0.0,
+        "gaussian": 100.0,
+        "poisson": 0.0
+      }
+    },
+    {
+      "case": "poisson_ct",
+      "image_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\poisson_ct.png",
+      "pred_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\poisson_ct_pred.png",
+      "unique_classes": [
+        0,
+        1
+      ],
+      "counts": {
+        "clean": 3,
+        "gaussian": 262141,
+        "poisson": 0
+      },
+      "percentages": {
+        "clean": 0.0,
+        "gaussian": 100.0,
+        "poisson": 0.0
+      }
+    },
+    {
+      "case": "gaussian_poisson_ct",
+      "image_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\gaussian_poisson_ct.png",
+      "pred_path": "D:\\Downloads\\CT_Noise_Project - Copy\\outputs\\reports\\inference_test_20260902_205621\\gaussian_poisson_ct_pred.png",
+      "unique_classes": [
+        0,
+        1
+      ],
+      "counts": {
+        "clean": 1,
+        "gaussian": 262143,
+        "poisson": 0
+      },
+      "percentages": {
+        "clean": 0.0,
+        "gaussian": 100.0,
+        "poisson": 0.0
+      }
+    }
+  ]
+}

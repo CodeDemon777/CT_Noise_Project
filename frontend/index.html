@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungCT AI - Noise Classification & Severity Analysis</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for AI Performance Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#cyan-blue-grad)"/>
+                    <defs>
+                        <linearGradient id="cyan-blue-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#48CAE4"/>
+                            <stop offset="100%" stop-color="#0077B6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">LungCT <span class="accent-text">AI</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#model-specs" class="nav-link">4-Model Specs</a>
+                <a href="#tech-stack" class="nav-link">Tech Stack</a>
+                <a href="#agile" class="nav-link">Agile Roadmap</a>
+                <a href="#performance" class="nav-link">AI Metrics</a>
+                <a href="#analyze" class="nav-link btn-nav-cta">Analyze CT</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 1. Hero Section -->
+    <section id="hero" class="section hero-section">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="tagline">COMMERCIAL-GRADE HEALTHCARE AI</div>
+                <h1 class="hero-title">AI-Powered Lung CT Noise Analysis System</h1>
+                <p class="hero-subtitle">Detect, classify and quantify multiple noise types in lung CT images using advanced U-Net++ deep learning segmentation.</p>
+                <div class="hero-actions">
+                    <a href="#analyze" class="btn btn-primary">Analyze CT Image</a>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-wrapper">
+                    <!-- High-tech animated clinical visual -->
+                    <svg viewBox="0 0 400 400" fill="none" class="animated-neural-svg" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="200" cy="200" r="160" stroke="#0077B6" stroke-width="1.5" stroke-dasharray="8 8" class="rotator"/>
+                        <circle cx="200" cy="200" r="120" stroke="#48CAE4" stroke-width="0.75" class="rotator-reverse"/>
+                        
+                        <!-- Neural nodes -->
+                        <g class="neural-network">
+                            <!-- Outer circles/nodes -->
+                            <circle cx="100" cy="150" r="8" fill="#48CAE4" class="pulse-node-1"/>
+                            <circle cx="100" cy="250" r="8" fill="#48CAE4" class="pulse-node-2"/>
+                            <circle cx="200" cy="100" r="10" fill="#0077B6" class="pulse-node-3"/>
+                            <circle cx="200" cy="300" r="10" fill="#0077B6" class="pulse-node-4"/>
+                            <circle cx="300" cy="150" r="8" fill="#48CAE4" class="pulse-node-5"/>
+                            <circle cx="300" cy="250" r="8" fill="#48CAE4" class="pulse-node-6"/>
+                            <circle cx="200" cy="200" r="16" fill="#03045E" stroke="#48CAE4" stroke-width="2" class="center-node"/>
+                            
+                            <!-- Synapses / Connection lines -->
+                            <line x1="100" y1="150" x2="200" y2="100" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="100" y1="250" x2="200" y2="300" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="100" y1="150" x2="200" y2="200" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="100" y1="250" x2="200" y2="200" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="100" x2="300" y2="150" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="200" y1="300" x2="300" y2="250" stroke="#0077B6" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="200" y1="200" x2="300" y2="150" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="200" x2="300" y2="250" stroke="#48CAE4" stroke-width="1" opacity="0.8"/>
+                            <line x1="200" y1="100" x2="200" y2="200" stroke="#0077B6" stroke-width="1" opacity="0.5"/>
+                            <line x1="200" y1="300" x2="200" y2="200" stroke="#0077B6" stroke-width="1" opacity="0.5"/>
+                        </g>
+
+                        <!-- Scanning line -->
+                        <line x1="40" y1="200" x2="360" y2="200" stroke="#00F0FF" stroke-width="2.5" class="scan-beam" opacity="0.75"/>
+                    </svg>
+                    <!-- Floating Stat Badge -->
+                    <div class="hero-badge">
+                        <div class="badge-icon">🔬</div>
+                        <div class="badge-info">
+                            <div class="badge-num">98.86%</div>
+                            <div class="badge-label">Dice Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. About Project Section -->
+    <section id="about" class="section about-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">About The Platform</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                    </div>
+                    <h3>What is Lung CT Imaging?</h3>
+                    <p>Lung Computed Tomography (CT) generates high-resolution transverse slice imagery of the thorax, mapping tissue density variations to identify tumors, infections, and interstitial lung diseases.</p>
+                </div>
+                
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3>Why Noise Matters?</h3>
+                    <p>Electronic systems add Gaussian noise, while photon starvation causes Poisson shot noise. These artifacts degrade signal quality, mask fine anatomical anomalies, and compromise automated clinical diagnostic accuracy.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-icon-box">
+                        <svg class="about-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3>AI Denoising Solution</h3>
+                    <p>Our solution utilizes a customized U-Net++ architecture to perform pixel-level segmentation, detecting noise regions, classifying them by source, and generating quantitative severity estimations.</p>
+                </div>
+            </div>
+
+            <div class="tech-stack-showcase">
+                <span class="tech-title">TECHNOLOGIES INCORPORATED:</span>
+                <div class="tech-badges">
+                    <span class="tech-badge">U-Net++</span>
+                    <span class="tech-badge">PyTorch</span>
+                    <span class="tech-badge">OpenCV</span>
+                    <span class="tech-badge">Computer Vision</span>
+                    <span class="tech-badge">Deep Learning</span>
+                    <span class="tech-badge">Flask API</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Features Section -->
+    <section id="features" class="section features-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">System Features</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h4>Upload Lung CT</h4>
+                    <p>Direct support for DICOM conversion formats, PNG, BMP, or JPEG. Intuitive drag-and-drop client interface.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Multi-Noise Detection</h4>
+                    <p>Simultaneous profiling of Gaussian (additive thermal sensor) and Poisson (quantized quantum photons) artifacts.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h4>Pixel-Level Segmentation</h4>
+                    <p>High-fidelity spatial identification maps indicating exactly which pixels are compromised by noise.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Severity Estimation</h4>
+                    <p>Calculates precise percentage area maps for each noise class, matching standard clinical metrics.</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🖼️</div>
+                    <h4>Bounding Box Visualization</h4>
+                    <p>Generates high-contrast visual cues (red boxes for Gaussian, blue for Poisson) on the CT scan viewport.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h4>AI-Powered Analysis</h4>
+                    <p>Uses deep learning representations validated via training parameters to verify structural scanning safety.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Diagnostic Center -->
+    <section id="analyze" class="section upload-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">Diagnostic Center</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Select a model, upload a thoracic CT scan, and run independent noise analysis.</p>
+            </div>
+
+            <!-- ════════════ MODEL SWITCHER BAR (4 MODELS) ════════════ -->
+            <div class="model-switcher" id="model-switcher" role="tablist" aria-label="Model selection">
+                <button class="switcher-btn switcher-btn-active" id="switcher-m1-btn"
+                        role="tab" aria-selected="true" onclick="switchModel('model1')">
+                    <div class="sw-badge sw-badge-m1">MODEL 1</div>
+                    <div class="sw-arch">U-Net++</div>
+                    <div class="sw-classes">
+                        <span class="sw-class-dot sw-dot-gauss"></span>Gaussian &amp; Poisson
+                    </div>
+                </button>
+                <button class="switcher-btn" id="switcher-m2-btn"
+                        role="tab" aria-selected="false" onclick="switchModel('model2')">
+                    <div class="sw-badge sw-badge-m2">MODEL 2</div>
+                    <div class="sw-arch">Attention U-Net</div>
+                    <div class="sw-classes">
+                        <span class="sw-class-dot sw-dot-speck"></span>Poisson &amp; Speckle
+                    </div>
+                </button>
+                <button class="switcher-btn" id="switcher-m3-btn"
+                        role="tab" aria-selected="false" onclick="switchModel('model3')">
+                    <div class="sw-badge sw-badge-m3">MODEL 3</div>
+                    <div class="sw-arch">DeepLabV3+</div>
+                    <div class="sw-classes">
+                        <span class="sw-class-dot sw-dot-sp"></span>Salt-Pepper &amp; RVIN
+                    </div>
+                </button>
+                <button class="switcher-btn" id="switcher-m4-btn"
+                        role="tab" aria-selected="false" onclick="switchModel('model4')">
+                    <div class="sw-badge sw-badge-m4">MODEL 4</div>
+                    <div class="sw-arch">NoiseCNN</div>
+                    <div class="sw-classes">
+                        <span class="sw-class-dot sw-dot-quant"></span>Quantization &amp; Periodic
+                    </div>
+                </button>
+            </div>
+
+            <!-- ════════════ MODEL 1 PANEL ════════════ -->
+            <div id="model1-panel" class="model-panel" role="tabpanel">
+                <!-- Info card -->
+                <div class="model-info-card m1-info-card">
+                    <div class="mic-header">
+                        <span class="mic-badge mic-badge-m1">MODEL 1</span>
+                        <span class="mic-arch">U-Net++</span>
+                    </div>
+                    <div class="mic-body">
+                        <div class="mic-section-title">Noise Classes</div>
+                        <ul class="mic-list">
+                            <li><span class="mic-dot mic-dot-gauss"></span>Gaussian Noise</li>
+                            <li><span class="mic-dot mic-dot-pois"></span>Poisson Noise</li>
+                        </ul>
+                        <div class="mic-section-title">Task</div>
+                        <div class="mic-task">Pixel-Level Segmentation</div>
+                    </div>
+                </div>
+
+                <!-- Upload zone -->
+                <label class="mrc-upload-area" id="drop-zone-m1" for="file-input-m1">
+                    <input type="file" id="file-input-m1" accept="image/*" class="file-hidden">
+                    <svg class="mrc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+                    </svg>
+                    <div class="mrc-upload-text">Drop CT scan here or <span class="mrc-browse-link" id="browse-m1">browse</span></div>
+                    <div class="mrc-upload-sub">PNG, JPEG, BMP — recommended 512×512</div>
+                </label>
+
+                <!-- Preview -->
+                <div class="mrc-preview hidden" id="mrc-preview-m1">
+                    <img id="mrc-img-m1" src="#" alt="CT Preview M1" class="mrc-preview-img">
+                    <div class="mrc-preview-meta" id="mrc-meta-m1">—</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="model-panel-actions">
+                    <button class="btn mrc-run-btn mrc-run-m1" id="run-m1-btn" disabled>
+                        <span class="mrc-run-icon">▶</span> Run Model 1 Analysis
+                    </button>
+                    <button class="mrc-demo-link" id="demo-m1-btn">⚡ Quick Demo (auto-generate scan)</button>
+                </div>
+
+                <!-- Progress -->
+                <div class="mrc-progress hidden" id="mrc-progress-m1">
+                    <div class="mrc-progress-bar" id="mrc-pbar-m1"></div>
+                    <div class="mrc-progress-label" id="mrc-plabel-m1">Initializing…</div>
+                </div>
+
+                <!-- Progress steps (M1) -->
+                <div class="analysis-progress hidden" id="m1-step-bar">
+                    <div class="progress-steps">
+                        <div class="step" id="m1-step-upload"><span class="step-num">1</span><span class="step-label">Upload Scan</span></div>
+                        <div class="step" id="m1-step-model"><span class="step-num">2</span><span class="step-label">Model Inference (U-Net++)</span></div>
+                        <div class="step" id="m1-step-class"><span class="step-num">3</span><span class="step-label">Noise Classification</span></div>
+                        <div class="step" id="m1-step-sev"><span class="step-num">4</span><span class="step-label">Severity Analysis</span></div>
+                        <div class="step" id="m1-step-vis"><span class="step-num">5</span><span class="step-label">Visualization Overlay</span></div>
+                    </div>
+                </div>
+            </div><!-- /#model1-panel -->
+
+            <!-- ════════════ MODEL 2 PANEL ════════════ -->
+            <div id="model2-panel" class="model-panel hidden" role="tabpanel">
+                <!-- Info card -->
+                <div class="model-info-card m2-info-card">
+                    <div class="mic-header">
+                        <span class="mic-badge mic-badge-m2">MODEL 2</span>
+                        <span class="mic-arch">Attention U-Net</span>
+                    </div>
+                    <div class="mic-body">
+                        <div class="mic-section-title">Noise Classes</div>
+                        <ul class="mic-list">
+                            <li><span class="mic-dot mic-dot-pois"></span>Poisson Noise</li>
+                            <li><span class="mic-dot mic-dot-speck"></span>Speckle Noise</li>
+                        </ul>
+                        <div class="mic-section-title">Task</div>
+                        <div class="mic-task">Pixel-Level Segmentation</div>
+                    </div>
+                </div>
+
+                <!-- Upload zone -->
+                <label class="mrc-upload-area mrc-upload-m2" id="drop-zone-m2" for="file-input-m2">
+                    <input type="file" id="file-input-m2" accept="image/*" class="file-hidden">
+                    <svg class="mrc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+                    </svg>
+                    <div class="mrc-upload-text">Drop CT scan here or <span class="mrc-browse-link" id="browse-m2">browse</span></div>
+                    <div class="mrc-upload-sub">PNG, JPEG, BMP — recommended 512×512</div>
+                </label>
+
+                <!-- Preview -->
+                <div class="mrc-preview hidden" id="mrc-preview-m2">
+                    <img id="mrc-img-m2" src="#" alt="CT Preview M2" class="mrc-preview-img">
+                    <div class="mrc-preview-meta" id="mrc-meta-m2">—</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="model-panel-actions">
+                    <button class="btn mrc-run-btn mrc-run-m2" id="run-m2-btn" disabled>
+                        <span class="mrc-run-icon">▶</span> Run Model 2 Analysis
+                    </button>
+                    <button class="mrc-demo-link mrc-demo-link-m2" id="demo-m2-btn">⚡ Quick Demo (auto-generate scan)</button>
+                </div>
+
+                <!-- Progress -->
+                <div class="mrc-progress hidden" id="mrc-progress-m2">
+                    <div class="mrc-progress-bar mrc-pbar-green" id="mrc-pbar-m2"></div>
+                    <div class="mrc-progress-label" id="mrc-plabel-m2">Initializing…</div>
+                </div>
+
+                <!-- Progress steps (M2) -->
+                <div class="analysis-progress hidden" id="m2-step-bar">
+                    <div class="progress-steps">
+                        <div class="step" id="m2-step-upload"><span class="step-num">1</span><span class="step-label">Upload Scan</span></div>
+                        <div class="step" id="m2-step-model"><span class="step-num">2</span><span class="step-label">Model Inference (Attention U-Net)</span></div>
+                        <div class="step" id="m2-step-class"><span class="step-num">3</span><span class="step-label">Noise Classification</span></div>
+                        <div class="step" id="m2-step-sev"><span class="step-num">4</span><span class="step-label">Severity Analysis</span></div>
+                        <div class="step" id="m2-step-vis"><span class="step-num">5</span><span class="step-label">Visualization Overlay</span></div>
+                    </div>
+                </div>
+            </div><!-- /#model2-panel -->
+
+            <!-- ════════════ MODEL 3 PANEL (DeepLabV3+) ════════════ -->
+            <div id="model3-panel" class="model-panel hidden" role="tabpanel">
+                <!-- Info card -->
+                <div class="model-info-card m3-info-card">
+                    <div class="mic-header">
+                        <span class="mic-badge mic-badge-m3">MODEL 3</span>
+                        <span class="mic-arch">DeepLabV3+</span>
+                    </div>
+                    <div class="mic-body">
+                        <div class="mic-section-title">Noise Classes</div>
+                        <ul class="mic-list">
+                            <li><span class="mic-dot mic-dot-sp"></span>Salt &amp; Pepper Noise</li>
+                            <li><span class="mic-dot mic-dot-rvin"></span>RVIN (Random-Valued Impulse)</li>
+                        </ul>
+                        <div class="mic-section-title">Task</div>
+                        <div class="mic-task">Pixel-Level Segmentation &amp; ASPP</div>
+                    </div>
+                </div>
+
+                <!-- Upload zone -->
+                <label class="mrc-upload-area mrc-upload-m3" id="drop-zone-m3" for="file-input-m3">
+                    <input type="file" id="file-input-m3" accept="image/*" class="file-hidden">
+                    <svg class="mrc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+                    </svg>
+                    <div class="mrc-upload-text">Drop CT scan here or <span class="mrc-browse-link" id="browse-m3">browse</span></div>
+                    <div class="mrc-upload-sub">PNG, JPEG, BMP — recommended 512×512</div>
+                </label>
+
+                <!-- Preview -->
+                <div class="mrc-preview hidden" id="mrc-preview-m3">
+                    <img id="mrc-img-m3" src="#" alt="CT Preview M3" class="mrc-preview-img">
+                    <div class="mrc-preview-meta" id="mrc-meta-m3">—</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="model-panel-actions">
+                    <button class="btn mrc-run-btn mrc-run-m3" id="run-m3-btn" disabled>
+                        <span class="mrc-run-icon">▶</span> Run Model 3 Analysis
+                    </button>
+                    <button class="mrc-demo-link mrc-demo-link-m3" id="demo-m3-btn">⚡ Quick Demo (auto-generate scan)</button>
+                </div>
+
+                <!-- Progress -->
+                <div class="mrc-progress hidden" id="mrc-progress-m3">
+                    <div class="mrc-progress-bar mrc-pbar-amber" id="mrc-pbar-m3"></div>
+                    <div class="mrc-progress-label" id="mrc-plabel-m3">Initializing…</div>
+                </div>
+
+                <!-- Progress steps (M3) -->
+                <div class="analysis-progress hidden" id="m3-step-bar">
+                    <div class="progress-steps">
+                        <div class="step" id="m3-step-upload"><span class="step-num">1</span><span class="step-label">Upload Scan</span></div>
+                        <div class="step" id="m3-step-model"><span class="step-num">2</span><span class="step-label">Inference (DeepLabV3+)</span></div>
+                        <div class="step" id="m3-step-class"><span class="step-num">3</span><span class="step-label">Noise Classification</span></div>
+                        <div class="step" id="m3-step-sev"><span class="step-num">4</span><span class="step-label">Severity Analysis</span></div>
+                        <div class="step" id="m3-step-vis"><span class="step-num">5</span><span class="step-label">Visualization Overlay</span></div>
+                    </div>
+                </div>
+            </div><!-- /#model3-panel -->
+
+            <!-- ════════════ MODEL 4 PANEL (NoiseCNN) ════════════ -->
+            <div id="model4-panel" class="model-panel hidden" role="tabpanel">
+                <!-- Info card -->
+                <div class="model-info-card m4-info-card">
+                    <div class="mic-header">
+                        <span class="mic-badge mic-badge-m4">MODEL 4</span>
+                        <span class="mic-arch">NoiseCNN</span>
+                    </div>
+                    <div class="mic-body">
+                        <div class="mic-section-title">Noise Classes</div>
+                        <ul class="mic-list">
+                            <li><span class="mic-dot mic-dot-quant"></span>Quantization Noise</li>
+                            <li><span class="mic-dot mic-dot-peri"></span>Periodic Noise</li>
+                        </ul>
+                        <div class="mic-section-title">Task</div>
+                        <div class="mic-task">Whole-Scan Classification &amp; FFT Spectrum</div>
+                    </div>
+                </div>
+
+                <!-- Upload zone -->
+                <label class="mrc-upload-area mrc-upload-m4" id="drop-zone-m4" for="file-input-m4">
+                    <input type="file" id="file-input-m4" accept="image/*" class="file-hidden">
+                    <svg class="mrc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+                    </svg>
+                    <div class="mrc-upload-text">Drop CT scan here or <span class="mrc-browse-link" id="browse-m4">browse</span></div>
+                    <div class="mrc-upload-sub">PNG, JPEG, BMP — auto-resized to 128×128</div>
+                </label>
+
+                <!-- Preview -->
+                <div class="mrc-preview hidden" id="mrc-preview-m4">
+                    <img id="mrc-img-m4" src="#" alt="CT Preview M4" class="mrc-preview-img">
+                    <div class="mrc-preview-meta" id="mrc-meta-m4">—</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="model-panel-actions">
+                    <button class="btn mrc-run-btn mrc-run-m4" id="run-m4-btn" disabled>
+                        <span class="mrc-run-icon">▶</span> Run Model 4 Analysis
+                    </button>
+                    <button class="mrc-demo-link mrc-demo-link-m4" id="demo-m4-btn">⚡ Quick Demo (auto-generate scan)</button>
+                </div>
+
+                <!-- Progress -->
+                <div class="mrc-progress hidden" id="mrc-progress-m4">
+                    <div class="mrc-progress-bar mrc-pbar-purple" id="mrc-pbar-m4"></div>
+                    <div class="mrc-progress-label" id="mrc-plabel-m4">Initializing…</div>
+                </div>
+
+                <!-- Progress steps (M4) -->
+                <div class="analysis-progress hidden" id="m4-step-bar">
+                    <div class="progress-steps">
+                        <div class="step" id="m4-step-upload"><span class="step-num">1</span><span class="step-label">Upload Scan</span></div>
+                        <div class="step" id="m4-step-model"><span class="step-num">2</span><span class="step-label">NoiseCNN Feature Extraction</span></div>
+                        <div class="step" id="m4-step-class"><span class="step-num">3</span><span class="step-label">Probabilistic Classification</span></div>
+                        <div class="step" id="m4-step-sev"><span class="step-num">4</span><span class="step-label">Confidence Assessment</span></div>
+                        <div class="step" id="m4-step-vis"><span class="step-num">5</span><span class="step-label">Fourier FFT Diagnostics</span></div>
+                    </div>
+                </div>
+            </div><!-- /#model4-panel -->
+
+        </div>
+    </section>
+
+    <!-- Results Panel Wrapper (Includes 5, 6, and 10) -->
+    <div id="results-panel" class="results-panel-wrapper hidden">
+        
+        <!-- 5. Results Dashboard -->
+        <section class="section results-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Diagnostic Results Dashboard</h2>
+                    <div class="section-divider"></div>
+                    <div class="results-action-bar">
+                        <label for="file-input-m1" class="btn btn-secondary btn-sm" onclick="switchModel('model1')" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center;">
+                            📤 Upload New CT Scan
+                        </label>
+                        <button class="btn btn-primary btn-sm" onclick="switchModel('model2')">
+                            🔄 Model 2 (Attention U-Net)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model3')">
+                            Model 3 (DeepLabV3+)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model4')">
+                            Model 4 (NoiseCNN)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Original Panel -->
+                    <div class="result-viewport-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Original CT Image</span>
+                            <span class="viewport-tag tag-normal">RAW SCAN</span>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="result-original-img" src="#" alt="Original CT" class="viewport-img">
+                        </div>
+                    </div>
+
+                    <!-- Annotated Panel -->
+                    <div class="result-viewport-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Annotated CT View</span>
+                            <div class="viewport-options">
+                                <button class="btn-toggle active" id="toggle-box-btn">Bounding Box</button>
+                                <button class="btn-toggle" id="toggle-overlay-btn">Mask Overlay</button>
+                            </div>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="result-annotated-img" src="#" alt="Annotated CT" class="viewport-img">
+                            <img id="result-overlay-img" src="#" alt="Overlay CT" class="viewport-img hidden">
+                        </div>
+                        <div class="viewport-totals-section" id="viewport-totals-section">
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-red"></span>
+                                <span class="total-label">Gaussian Noise:</span>
+                                <span class="total-val" id="viewport-val-gaussian">0.00%</span>
+                                <span class="severity-badge" id="viewport-badge-gaussian">None</span>
+                            </div>
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-blue"></span>
+                                <span class="total-label">Poisson Noise:</span>
+                                <span class="total-val" id="viewport-val-poisson">0.00%</span>
+                                <span class="severity-badge" id="viewport-badge-poisson">None</span>
+                            </div>
+                        </div>
+                        <div class="viewport-regions-section" id="regions-list-section">
+                            <div class="regions-header">Detected Noise Regions</div>
+                            <div class="regions-list-wrapper">
+                                <ul id="regions-list" class="regions-list">
+                                    <li class="no-regions">No noise regions detected.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="viewport-footer">
+                            <div class="legend-item"><span class="legend-dot color-red"></span> Gaussian Box</div>
+                            <div class="legend-item"><span class="legend-dot color-blue"></span> Poisson Box</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Severity Analysis Dashboard -->
+        <section class="section severity-dashboard">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Severity Assessment</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="severity-cards">
+                    <!-- Gaussian Card -->
+                    <div class="severity-card hover-glow">
+                        <div class="card-head">
+                            <span class="noise-type">Gaussian Noise</span>
+                            <span class="severity-badge" id="badge-gaussian">Mild</span>
+                        </div>
+                        <div class="card-val" id="val-gaussian">12.50%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-red" id="bar-gaussian" style="width: 12.5%;"></div>
+                        </div>
+                        <p class="card-description">Represents additive electronic sensor noise. Highly concentrated in low-density tissues.</p>
+                    </div>
+
+                    <!-- Poisson Card -->
+                    <div class="severity-card hover-glow">
+                        <div class="card-head">
+                            <span class="noise-type">Poisson Noise</span>
+                            <span class="severity-badge" id="badge-poisson">Mild</span>
+                        </div>
+                        <div class="card-val" id="val-poisson">4.80%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-blue" id="bar-poisson" style="width: 4.8%;"></div>
+                        </div>
+                        <p class="card-description">Indicates photon shot noise caused by reduced radiation dose. Prominent in scattering zones.</p>
+                    </div>
+
+                    <!-- Combined Card -->
+                    <div class="severity-card hover-glow highlight-card">
+                        <div class="card-head">
+                            <span class="noise-type text-light">Total Denoising Required</span>
+                            <span class="severity-badge badge-highlight" id="badge-total">Moderate</span>
+                        </div>
+                        <div class="card-val text-light" id="val-total">17.30%</div>
+                        <div class="progress-track track-light">
+                            <div class="progress-fill fill-cyan" id="bar-total" style="width: 17.3%;"></div>
+                        </div>
+                        <p class="card-description text-dim">Cumulative scanning pixels impacted by noise artifacts. Evaluates total slice diagnostic viability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Download Report Section -->
+        <section class="section report-section">
+            <div class="container text-center">
+                <div class="report-box glass-card">
+                    <div class="report-icon-container">
+                        <svg class="report-big-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <h3>Denoising Report Generation</h3>
+                    <p class="report-lead">Prepare and download a PDF report containing original scans, segmented regions, metric tables and radiologist diagnostic recommendations.</p>
+                    <button class="btn btn-primary btn-large" id="download-report-btn">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download PDF Clinical Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- MODEL 2 Results Panel (Attention U-Net — Poisson + Speckle) -->
+    <div id="results-panel-m2" class="results-panel-wrapper m2-panel hidden">
+
+        <!-- Model 2 Header Banner -->
+        <section class="section m2-header-section">
+            <div class="container">
+                <div class="m2-banner">
+                    <div class="m2-banner-label">
+                        <span class="m2-model-tag">MODEL 2</span>
+                        <span class="m2-arch-tag">Attention U-Net</span>
+                    </div>
+                    <div class="m2-banner-title">Poisson &amp; Speckle Noise Segmentation</div>
+                    <div class="m2-banner-sub">Independent pixel-level segmentation pipeline with attention gates for fine-grained noise detection</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model 2 Diagnostic Viewports -->
+        <section class="section results-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 2 — Diagnostic Viewports</h2>
+                    <div class="section-divider"></div>
+                    <div class="results-action-bar">
+                        <label for="file-input-m2" class="btn btn-secondary btn-sm" onclick="switchModel('model2')" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center;">
+                            📤 Upload New CT Scan
+                        </label>
+                        <button class="btn btn-primary btn-sm" onclick="switchModel('model3')">
+                            🔄 Model 3 (DeepLabV3+)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model1')">
+                            Model 1 (U-Net++)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model4')">
+                            Model 4 (NoiseCNN)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Original CT for Model 2 (shared) -->
+                    <div class="result-viewport-card m2-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Original CT Image</span>
+                            <span class="viewport-tag tag-m2">ATTENTION U-NET INPUT</span>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m2-original-img" src="#" alt="Original CT (M2)" class="viewport-img">
+                        </div>
+                    </div>
+
+                    <!-- Model 2 Annotated Output -->
+                    <div class="result-viewport-card m2-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Model 2 — Annotated CT</span>
+                            <div class="viewport-options">
+                                <button class="btn-toggle active" id="m2-toggle-box-btn">Annotated</button>
+                                <button class="btn-toggle" id="m2-toggle-overlay-btn">Mask Overlay</button>
+                                <button class="btn-toggle" id="m2-toggle-mask-btn">Pixel Mask</button>
+                            </div>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m2-annotated-img" src="#" alt="M2 Annotated CT" class="viewport-img">
+                            <img id="m2-overlay-img" src="#" alt="M2 Overlay CT" class="viewport-img hidden">
+                            <img id="m2-mask-img" src="#" alt="M2 Pixel Mask" class="viewport-img hidden">
+                        </div>
+                        <div class="viewport-totals-section">
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-red"></span>
+                                <span class="total-label">Poisson Noise:</span>
+                                <span class="total-val" id="m2-viewport-val-poisson">0.00%</span>
+                                <span class="severity-badge" id="m2-viewport-badge-poisson">MILD</span>
+                            </div>
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-green"></span>
+                                <span class="total-label">Speckle Noise:</span>
+                                <span class="total-val" id="m2-viewport-val-speckle">0.00%</span>
+                                <span class="severity-badge" id="m2-viewport-badge-speckle">MILD</span>
+                            </div>
+                        </div>
+                        <div class="viewport-footer">
+                            <div class="legend-item"><span class="legend-dot color-red"></span> Poisson (Red)</div>
+                            <div class="legend-item"><span class="legend-dot color-green"></span> Speckle (Green)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model 2 Severity Dashboard -->
+        <section class="section severity-dashboard m2-severity-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 2 — Severity Assessment</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="severity-cards">
+                    <!-- Poisson Card (M2) -->
+                    <div class="severity-card hover-glow m2-card">
+                        <div class="card-head">
+                            <span class="noise-type">Poisson Noise <span class="model-label-small">(M2)</span></span>
+                            <span class="severity-badge" id="m2-badge-poisson">MILD</span>
+                        </div>
+                        <div class="card-val" id="m2-val-poisson">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-red" id="m2-bar-poisson" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Photon shot noise detected by Attention U-Net segmentation on LoDoPaB-CT dataset.</p>
+                    </div>
+
+                    <!-- Speckle Card (M2) -->
+                    <div class="severity-card hover-glow m2-card">
+                        <div class="card-head">
+                            <span class="noise-type">Speckle Noise <span class="model-label-small">(M2)</span></span>
+                            <span class="severity-badge" id="m2-badge-speckle">MILD</span>
+                        </div>
+                        <div class="card-val" id="m2-val-speckle">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-green" id="m2-bar-speckle" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Coherent interference noise pattern detected via attention-gated pixel segmentation.</p>
+                    </div>
+
+                    <!-- Total Noise Card (M2) -->
+                    <div class="severity-card hover-glow highlight-card m2-highlight-card">
+                        <div class="card-head">
+                            <span class="noise-type text-light">Total Noise (Model 2)</span>
+                            <span class="severity-badge badge-highlight" id="m2-badge-total">MILD</span>
+                        </div>
+                        <div class="card-val text-light" id="m2-val-total">0.00%</div>
+                        <div class="progress-track track-light">
+                            <div class="progress-fill fill-cyan" id="m2-bar-total" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description text-dim">Combined Poisson and Speckle pixels as percentage of total scan area — Model 2 independent result.</p>
+                    </div>
+                </div>
+
+                <!-- Model 2 Error Notice -->
+                <div id="m2-error-notice" class="m2-error-notice hidden">
+                    <span class="alert-icon">⚠️</span>
+                    <span id="m2-error-text">Model 2 result unavailable.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model 2 Report Section -->
+        <section class="section report-section">
+            <div class="container text-center">
+                <div class="report-box glass-card">
+                    <div class="report-icon-container">
+                        <svg class="report-big-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <h3>Denoising Report Generation (Model 2)</h3>
+                    <p class="report-lead">Prepare and download a PDF report containing original scans, segmented regions, metric tables and radiologist diagnostic recommendations.</p>
+                    <button class="btn btn-primary btn-large" id="download-report-btn-m2">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download PDF Clinical Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- MODEL 3 Results Panel (DeepLabV3+ — Salt & Pepper + RVIN) -->
+    <div id="results-panel-m3" class="results-panel-wrapper m3-panel hidden">
+        <section class="section m3-header-section">
+            <div class="container">
+                <div class="m3-banner">
+                    <div class="m3-banner-label">
+                        <span class="m3-model-tag">MODEL 3</span>
+                        <span class="m3-arch-tag">DeepLabV3+ (ASPP)</span>
+                    </div>
+                    <div class="m3-banner-title">Salt &amp; Pepper &amp; RVIN Noise Segmentation</div>
+                    <div class="m3-banner-sub">High-resolution semantic segmentation powered by Atrous Spatial Pyramid Pooling for impulse artifact isolation</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section results-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 3 — Diagnostic Viewports</h2>
+                    <div class="section-divider"></div>
+                    <div class="results-action-bar">
+                        <label for="file-input-m3" class="btn btn-secondary btn-sm" onclick="switchModel('model3')" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center;">
+                            📤 Upload New CT Scan
+                        </label>
+                        <button class="btn btn-primary btn-sm" onclick="switchModel('model4')">
+                            🔄 Model 4 (NoiseCNN)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model1')">
+                            Model 1 (U-Net++)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model2')">
+                            Model 2 (Attention U-Net)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-viewport-card m3-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Original CT Image</span>
+                            <span class="viewport-tag tag-m3">DEEPLABV3+ INPUT</span>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m3-original-img" src="#" alt="Original CT (M3)" class="viewport-img">
+                        </div>
+                    </div>
+
+                    <div class="result-viewport-card m3-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Model 3 — Annotated CT</span>
+                            <div class="viewport-options">
+                                <button class="btn-toggle active" id="m3-toggle-box-btn">Annotated</button>
+                                <button class="btn-toggle" id="m3-toggle-overlay-btn">Mask Overlay</button>
+                                <button class="btn-toggle" id="m3-toggle-mask-btn">Pixel Mask</button>
+                            </div>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m3-annotated-img" src="#" alt="M3 Annotated CT" class="viewport-img">
+                            <img id="m3-overlay-img" src="#" alt="M3 Overlay CT" class="viewport-img hidden">
+                            <img id="m3-mask-img" src="#" alt="M3 Pixel Mask" class="viewport-img hidden">
+                        </div>
+                        <div class="viewport-totals-section">
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-amber"></span>
+                                <span class="total-label">Salt &amp; Pepper:</span>
+                                <span class="total-val" id="m3-viewport-val-sp">0.00%</span>
+                                <span class="severity-badge" id="m3-viewport-badge-sp">MILD</span>
+                            </div>
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-purple"></span>
+                                <span class="total-label">RVIN:</span>
+                                <span class="total-val" id="m3-viewport-val-rvin">0.00%</span>
+                                <span class="severity-badge" id="m3-viewport-badge-rvin">MILD</span>
+                            </div>
+                        </div>
+                        <div class="viewport-footer">
+                            <div class="legend-item"><span class="legend-dot color-amber"></span> Salt &amp; Pepper (Orange)</div>
+                            <div class="legend-item"><span class="legend-dot color-purple"></span> RVIN (Purple)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section severity-dashboard m3-severity-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 3 — Severity Assessment</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="severity-cards">
+                    <div class="severity-card hover-glow m3-card">
+                        <div class="card-head">
+                            <span class="noise-type">Salt &amp; Pepper Noise <span class="model-label-small">(M3)</span></span>
+                            <span class="severity-badge" id="m3-badge-sp">MILD</span>
+                        </div>
+                        <div class="card-val" id="m3-val-sp">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-amber" id="m3-bar-sp" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Impulse noise caused by sharp disturbances in image transmission and faulty detector cells.</p>
+                    </div>
+
+                    <div class="severity-card hover-glow m3-card">
+                        <div class="card-head">
+                            <span class="noise-type">RVIN Noise <span class="model-label-small">(M3)</span></span>
+                            <span class="severity-badge" id="m3-badge-rvin">MILD</span>
+                        </div>
+                        <div class="card-val" id="m3-val-rvin">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-purple" id="m3-bar-rvin" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Random-Valued Impulse Noise scattered across intensity levels, isolated via ASPP dilated receptive fields.</p>
+                    </div>
+
+                    <div class="severity-card hover-glow highlight-card m3-highlight-card">
+                        <div class="card-head">
+                            <span class="noise-type text-light">Total Noise (Model 3)</span>
+                            <span class="severity-badge badge-highlight" id="m3-badge-total">MILD</span>
+                        </div>
+                        <div class="card-val text-light" id="m3-val-total">0.00%</div>
+                        <div class="progress-track track-light">
+                            <div class="progress-fill fill-cyan" id="m3-bar-total" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description text-dim">Cumulative impulse noise contamination estimated across slice area by DeepLabV3+.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model 3 Report Section -->
+        <section class="section report-section">
+            <div class="container text-center">
+                <div class="report-box glass-card">
+                    <div class="report-icon-container">
+                        <svg class="report-big-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <h3>Denoising Report Generation (Model 3)</h3>
+                    <p class="report-lead">Prepare and download a PDF report containing original scans, segmented regions, metric tables and radiologist diagnostic recommendations.</p>
+                    <button class="btn btn-primary btn-large" id="download-report-btn-m3">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download PDF Clinical Report
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODEL 4 Results Panel (NoiseCNN — Quantization + Periodic) -->
+    <div id="results-panel-m4" class="results-panel-wrapper m4-panel hidden">
+        <section class="section m4-header-section">
+            <div class="container">
+                <div class="m4-banner">
+                    <div class="m4-banner-label">
+                        <span class="m4-model-tag">MODEL 4</span>
+                        <span class="m4-arch-tag">NoiseCNN</span>
+                    </div>
+                    <div class="m4-banner-title">Quantization &amp; Periodic Noise Classification</div>
+                    <div class="m4-banner-sub">Fast convolutional inference on LoDoPaB-CT dataset with 2D Fourier transform frequency diagnostics</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section results-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 4 — Diagnostic Viewports</h2>
+                    <div class="section-divider"></div>
+                    <div class="results-action-bar">
+                        <label for="file-input-m4" class="btn btn-secondary btn-sm" onclick="switchModel('model4')" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center;">
+                            📤 Upload New CT Scan
+                        </label>
+                        <button class="btn btn-primary btn-sm" onclick="switchModel('model1')">
+                            🔄 Model 1 (U-Net++)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model2')">
+                            Model 2 (Attention U-Net)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="switchModel('model3')">
+                            Model 3 (DeepLabV3+)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-viewport-card m4-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Original CT Image</span>
+                            <span class="viewport-tag tag-m4">NOISECNN INPUT</span>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m4-original-img" src="#" alt="Original CT (M4)" class="viewport-img">
+                        </div>
+                    </div>
+
+                    <div class="result-viewport-card m4-card">
+                        <div class="viewport-header">
+                            <span class="viewport-title">Model 4 — Diagnostic Classification</span>
+                            <div class="viewport-options">
+                                <button class="btn-toggle active" id="m4-toggle-box-btn">HUD Annotated</button>
+                                <button class="btn-toggle" id="m4-toggle-overlay-btn">FFT Overlay</button>
+                                <button class="btn-toggle" id="m4-toggle-spec-btn">Frequency Spectrum</button>
+                            </div>
+                        </div>
+                        <div class="viewport-body">
+                            <img id="m4-annotated-img" src="#" alt="M4 Annotated CT" class="viewport-img">
+                            <img id="m4-overlay-img" src="#" alt="M4 Overlay CT" class="viewport-img hidden">
+                            <img id="m4-spectrum-img" src="#" alt="M4 FFT Spectrum" class="viewport-img hidden">
+                        </div>
+                        <div class="viewport-totals-section">
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-gold"></span>
+                                <span class="total-label">Quantization Noise:</span>
+                                <span class="total-val" id="m4-viewport-val-quant">0.00%</span>
+                                <span class="severity-badge" id="m4-viewport-badge-quant">NONE</span>
+                            </div>
+                            <div class="viewport-total-item">
+                                <span class="total-dot color-magenta"></span>
+                                <span class="total-label">Periodic Noise:</span>
+                                <span class="total-val" id="m4-viewport-val-peri">0.00%</span>
+                                <span class="severity-badge" id="m4-viewport-badge-peri">NONE</span>
+                            </div>
+                        </div>
+                        <div class="viewport-footer">
+                            <div class="legend-item"><span class="legend-dot color-gold"></span> Quantization Probability</div>
+                            <div class="legend-item"><span class="legend-dot color-magenta"></span> Periodic FFT Spike</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section severity-dashboard m4-severity-section">
+            <div class="container">
+                <div class="section-header-center">
+                    <h2 class="section-title">Model 4 — Confidence &amp; Probability Analysis</h2>
+                    <div class="section-divider"></div>
+                </div>
+
+                <div class="severity-cards">
+                    <div class="severity-card hover-glow m4-card">
+                        <div class="card-head">
+                            <span class="noise-type">Quantization Noise <span class="model-label-small">(M4)</span></span>
+                            <span class="severity-badge" id="m4-badge-quant">MILD</span>
+                        </div>
+                        <div class="card-val" id="m4-val-quant">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-gold" id="m4-bar-quant" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Discrete bit-depth rounding artifact resulting from low-precision CT ADC conversion.</p>
+                    </div>
+
+                    <div class="severity-card hover-glow m4-card">
+                        <div class="card-head">
+                            <span class="noise-type">Periodic Noise <span class="model-label-small">(M4)</span></span>
+                            <span class="severity-badge" id="m4-badge-peri">MILD</span>
+                        </div>
+                        <div class="card-val" id="m4-val-peri">0.00%</div>
+                        <div class="progress-track">
+                            <div class="progress-fill fill-magenta" id="m4-bar-peri" style="width: 0%;"></div>
+                        </div>
+                        <p class="card-description">Harmonic electrical interference patterns producing sinusoidal banding across detector channels.</p>
+                    </div>
+
+                    <div class="severity-card hover-glow highlight-card m4-highlight-card">
+                        <div class="card-head">
+                            <span class="noise-type text-light">Scan Status (Model 4)</span>
+                            <span class="severity-badge badge-highlight" id="m4-badge-pred">CLEAN</span>
+                        </div>
+                        <div class="card-val text-light" id="m4-val-pred">100.0%</div>
+                        <div class="progress-track track-light">
+                            <div class="progress-fill fill-cyan" id="m4-bar-conf" style="width: 100%;"></div>
+                        </div>
+                        <p class="card-description text-dim" id="m4-desc-conf">Predicted scan status with model confidence score evaluated via NoiseCNN.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Model 4 Report Section -->
+        <section class="section report-section">
+            <div class="container text-center">
+                <div class="report-box glass-card">
+                    <div class="report-icon-container">
+                        <svg class="report-big-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <h3>Denoising Report Generation (Model 4)</h3>
+                    <p class="report-lead">Prepare and download a PDF report containing original scans, segmented regions, metric tables and radiologist diagnostic recommendations.</p>
+                    <button class="btn btn-primary btn-large" id="download-report-btn-m4">
+                        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Download PDF Clinical Report
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 7. AI Performance Dashboard -->
+    <section id="performance" class="section performance-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">AI Performance & Validation Metrics</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Training metrics and validation curves for the deployed U-Net++ network demonstrating accuracy targets.</p>
+            </div>
+
+            <!-- Key metrics cards -->
+            <div class="metrics-grid">
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9886</div>
+                    <div class="metric-num-label">Dice Coefficient</div>
+                    <div class="metric-num-desc">Overlapping area accuracy</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9778</div>
+                    <div class="metric-num-label">Intersection over Union (IoU)</div>
+                    <div class="metric-num-desc">Jaccard index target</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9899</div>
+                    <div class="metric-num-label">Precision</div>
+                    <div class="metric-num-desc">Positive predictive integrity</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9875</div>
+                    <div class="metric-num-label">Recall</div>
+                    <div class="metric-num-desc">Sensitivity coverage</div>
+                </div>
+                <div class="metric-num-card">
+                    <div class="metric-num-val">0.9887</div>
+                    <div class="metric-num-label">F1-Score</div>
+                    <div class="metric-num-desc">Harmonic mean parameter</div>
+                </div>
+            </div>
+
+            <!-- Validation Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h5>Model Denoising Loss Curves</h5>
+                    <div class="chart-wrapper">
+                        <canvas id="lossChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h5>Segmentation Metrics (Dice / IoU)</h5>
+                    <div class="chart-wrapper">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. AI 4-Model Architecture & Specifications -->
+    <section id="model-specs" class="section model-info-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">4-Model Deep Learning Architecture</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Four specialized deep neural network models engineered to detect, classify, and quantify distinct physical CT noise modalities.</p>
+            </div>
+
+            <div class="models-grid-4">
+                <!-- Model 1 Card -->
+                <div class="model-detail-card mdc-m1">
+                    <div class="mdc-header">
+                        <span class="mdc-badge">MODEL 1</span>
+                        <span class="sw-class-dot sw-dot-gauss"></span>
+                    </div>
+                    <h3 class="mdc-title">U-Net++ (Nested UNet)</h3>
+                    <div class="mdc-arch-subtitle">Gaussian &amp; Poisson Noise Segmentation</div>
+                    <p class="mdc-desc">
+                        Utilizes dense nested skip pathways connecting encoder and decoder sub-networks to capture both high-frequency electronic thermal noise and low-dose quantum photon starvation artifacts.
+                    </p>
+                    <div class="mdc-specs-list">
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Target Artifacts:</span>
+                            <span class="mdc-spec-v">Gaussian + Poisson</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Backbone:</span>
+                            <span class="mdc-spec-v font-code">ResNet18 / Nested Conv</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Input Resolution:</span>
+                            <span class="mdc-spec-v font-code">512 × 512 × 1 ([-1, 1])</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Output Format:</span>
+                            <span class="mdc-spec-v">3-Class Pixel Mask</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Dice Accuracy:</span>
+                            <span class="mdc-spec-v text-cyan">98.86%</span>
+                        </div>
+                    </div>
+                    <div class="mdc-tags">
+                        <span class="mdc-tag">Dense Skip Connections</span>
+                        <span class="mdc-tag">Deep Supervision</span>
+                        <span class="mdc-tag">Bounding Box HUD</span>
+                    </div>
+                </div>
+
+                <!-- Model 2 Card -->
+                <div class="model-detail-card mdc-m2">
+                    <div class="mdc-header">
+                        <span class="mdc-badge">MODEL 2</span>
+                        <span class="sw-class-dot sw-dot-speck"></span>
+                    </div>
+                    <h3 class="mdc-title">Attention U-Net</h3>
+                    <div class="mdc-arch-subtitle">Poisson &amp; Speckle Noise Segmentation</div>
+                    <p class="mdc-desc">
+                        Integrates Additive Attention Gates (AG) that learn to suppress irrelevant background lung parenchyma while selectively focusing gradient activation on subtle multiplicative speckle scatter.
+                    </p>
+                    <div class="mdc-specs-list">
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Target Artifacts:</span>
+                            <span class="mdc-spec-v">Poisson + Speckle</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Backbone:</span>
+                            <span class="mdc-spec-v font-code">Attention Gated UNet</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Input Resolution:</span>
+                            <span class="mdc-spec-v font-code">512 × 512 × 1 ([0, 1])</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Output Format:</span>
+                            <span class="mdc-spec-v">4-Ch Attention Mask</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Checkpoint:</span>
+                            <span class="mdc-spec-v font-code text-cyan">Joshna.pth (125MB)</span>
+                        </div>
+                    </div>
+                    <div class="mdc-tags">
+                        <span class="mdc-tag">Attention Gates</span>
+                        <span class="mdc-tag">Co-occurrence Logic</span>
+                        <span class="mdc-tag">Red/Green Overlay</span>
+                    </div>
+                </div>
+
+                <!-- Model 3 Card -->
+                <div class="model-detail-card mdc-m3">
+                    <div class="mdc-header">
+                        <span class="mdc-badge">MODEL 3</span>
+                        <span class="sw-class-dot sw-dot-sp"></span>
+                    </div>
+                    <h3 class="mdc-title">DeepLabV3+</h3>
+                    <div class="mdc-arch-subtitle">Salt &amp; Pepper + RVIN Noise Segmentation</div>
+                    <p class="mdc-desc">
+                        Employs Atrous Spatial Pyramid Pooling (ASPP) with dilated convolutions to capture multi-scale contextual features, accurately isolating isolated impulse outliers from fine anatomical tissue textures.
+                    </p>
+                    <div class="mdc-specs-list">
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Target Artifacts:</span>
+                            <span class="mdc-spec-v">Salt-Pepper &amp; RVIN</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Backbone:</span>
+                            <span class="mdc-spec-v font-code">ASPP + Decoder Module</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Input Resolution:</span>
+                            <span class="mdc-spec-v font-code">512 × 512 × 1 ([0, 1])</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Output Format:</span>
+                            <span class="mdc-spec-v">3-Class Pixel Mask</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Checkpoint:</span>
+                            <span class="mdc-spec-v font-code text-cyan">Jahnavi.pth (276MB)</span>
+                        </div>
+                    </div>
+                    <div class="mdc-tags">
+                        <span class="mdc-tag">Dilated Convolutions</span>
+                        <span class="mdc-tag">Impulse Detection</span>
+                        <span class="mdc-tag">Amber/Purple Map</span>
+                    </div>
+                </div>
+
+                <!-- Model 4 Card -->
+                <div class="model-detail-card mdc-m4">
+                    <div class="mdc-header">
+                        <span class="mdc-badge">MODEL 4</span>
+                        <span class="sw-class-dot sw-dot-quant"></span>
+                    </div>
+                    <h3 class="mdc-title">NoiseCNN</h3>
+                    <div class="mdc-arch-subtitle">Quantization &amp; Periodic Noise Classification</div>
+                    <p class="mdc-desc">
+                        Deep feature extractor paired with 2D Fast Fourier Transform (FFT) magnitude analysis for fast whole-scan screening of ADC bit-depth truncation and harmonic periodic stripe artifacts.
+                    </p>
+                    <div class="mdc-specs-list">
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Target Artifacts:</span>
+                            <span class="mdc-spec-v">Quantization + Periodic</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Backbone:</span>
+                            <span class="mdc-spec-v font-code">Deep CNN + Global Pool</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Input Resolution:</span>
+                            <span class="mdc-spec-v font-code">128 × 128 × 1 (Min-Max)</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Output Format:</span>
+                            <span class="mdc-spec-v">Class Confidence Dist.</span>
+                        </div>
+                        <div class="mdc-spec-item">
+                            <span class="mdc-spec-k">Checkpoint:</span>
+                            <span class="mdc-spec-v font-code text-cyan">Vasanth.pth (2.4MB)</span>
+                        </div>
+                    </div>
+                    <div class="mdc-tags">
+                        <span class="mdc-tag">2D FFT Spectrum</span>
+                        <span class="mdc-tag">Softmax Probability</span>
+                        <span class="mdc-tag">Harmonic Detection</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comprehensive 4-Model Matrix Table -->
+            <div class="matrix-card">
+                <div class="matrix-title">Model Comparison &amp; Specification Matrix</div>
+                <div class="matrix-desc">Side-by-side technical parameters and architectural specifications for all four deployed models.</div>
+                <div style="overflow-x: auto;">
+                    <table class="spec-matrix-table">
+                        <thead>
+                            <tr>
+                                <th>Model Designation</th>
+                                <th>Architecture</th>
+                                <th>Target Noise Types</th>
+                                <th>Input Shape &amp; Normalization</th>
+                                <th>Output Type</th>
+                                <th>Clinical Objective</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="table-model-badge" style="background:#38bdf8; color:#0f172a;">MODEL 1</span> <strong>UNet++</strong></td>
+                                <td>Nested Dense U-Net (ResNet18)</td>
+                                <td>Gaussian &amp; Poisson Noise</td>
+                                <td>512 × 512 × 1 ([-1.0, 1.0])</td>
+                                <td>3-Class Segmentation (0=Clean, 1=Gauss, 2=Poisson)</td>
+                                <td>Detects sensor electronics thermal noise &amp; photon starvation.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="table-model-badge" style="background:#10b981; color:#fff;">MODEL 2</span> <strong>Attention U-Net</strong></td>
+                                <td>Additive Attention Gated UNet</td>
+                                <td>Poisson &amp; Multiplicative Speckle</td>
+                                <td>512 × 512 × 1 ([0.0, 1.0])</td>
+                                <td>4-Ch Softmax Remapped (0=Clean, 1=Poisson, 2=Speckle)</td>
+                                <td>Highlights granular scatter in high-density tissue regions.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="table-model-badge" style="background:#f59e0b; color:#0f172a;">MODEL 3</span> <strong>DeepLabV3+</strong></td>
+                                <td>ASPP Dilated Convolutions</td>
+                                <td>Salt &amp; Pepper + RVIN</td>
+                                <td>512 × 512 × 1 ([0.0, 1.0])</td>
+                                <td>3-Class Pixel Mask (0=Clean, 1=S&amp;P, 2=RVIN)</td>
+                                <td>Isolates dead detector pixels &amp; random impulse corruptions.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="table-model-badge" style="background:#a855f7; color:#fff;">MODEL 4</span> <strong>NoiseCNN</strong></td>
+                                <td>Deep CNN + 2D FFT Spectrum</td>
+                                <td>Quantization &amp; Periodic Stripes</td>
+                                <td>128 × 128 × 1 (Min-Max Standardized)</td>
+                                <td>3-Class Probability Distribution + FFT Spectrum</td>
+                                <td>Rapid whole-scan screening for ADC discretization &amp; harmonic banding.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Comprehensive Technology Stack Section -->
+    <section id="tech-stack" class="section tech-stack-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">Complete Technology Stack</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Production-grade, modular software architecture combining modern frontend aesthetics, scalable microservices, and high-performance deep learning runtimes.</p>
+            </div>
+
+            <div class="tech-stack-grid">
+                <!-- Layer 1: Frontend & UI Engineering -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">🎨</div>
+                        <div>
+                            <div class="tech-layer-title">Frontend &amp; UI Engineering</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">Client Presentation Layer</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        Responsive medical-grade glassmorphic interface built with semantic HTML5, modern CSS3 variables, and vanilla ES6+ JavaScript for fast, dependency-free client rendering.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Semantic HTML5</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Modern CSS3 &amp; Glassmorphism</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Vanilla ES6+ JavaScript</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Chart.js Performance Analytics</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Dynamic SVG Visualizer</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Async Multi-Model Stream</span>
+                    </div>
+                </div>
+
+                <!-- Layer 2: Backend API & Microservices -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">⚡</div>
+                        <div>
+                            <div class="tech-layer-title">Backend REST Engine</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">Python / Flask Microservices</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        High-throughput Python Flask RESTful API server supporting unified multi-model inference routing, multipart upload handling, CORS security headers, and structured JSON telemetry.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Python 3.10+ Runtime</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Flask 3.0+ REST Framework</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Multi-Model Dynamic Routing</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Werkzeug File Security</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>CORS Middleware</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Batch Processing API</span>
+                    </div>
+                </div>
+
+                <!-- Layer 3: Deep Learning & Computer Vision Core -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">🧠</div>
+                        <div>
+                            <div class="tech-layer-title">Deep Learning &amp; CV Core</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">PyTorch &amp; OpenCV Pipeline</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        Deep neural networks implemented in PyTorch with hardware-adaptive CPU/CUDA execution, paired with OpenCV for contour extraction, bounding-box annotations, and color mask blending.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>PyTorch 2.0+ Tensor Engine</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Torchvision Architecture</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>OpenCV 4.8 Image Processing</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>NumPy Vectorized Compute</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>SciPy 2D FFT Frequency Analysis</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>CUDA Acceleration (Auto-Fallback)</span>
+                    </div>
+                </div>
+
+                <!-- Layer 4: Dataset & Volumetric CT Processing -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">💾</div>
+                        <div>
+                            <div class="tech-layer-title">Dataset &amp; Volume Pipeline</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">HDF5 3D Volumetric Processing</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        Dedicated pipeline for ingesting high-dimensional HDF5 training volumes (128 × 362 × 362), dynamic slice normalization, synthetic phantom simulation, and controlled noise generation.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>HDF5 / h5py Volumetric IO</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Ground-Truth CT Extraction</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Multi-Distribution Noise Simulator</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>DICOM / PNG / JPEG Conversion</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>CT Phantom Generator</span>
+                    </div>
+                </div>
+
+                <!-- Layer 5: Clinical PDF Diagnostic Reporting -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">📄</div>
+                        <div>
+                            <div class="tech-layer-title">Clinical PDF Reporting Engine</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">ReportLab Automated Builder</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        Automated clinical document generation utilizing ReportLab Flowables to construct multi-page diagnostic reports featuring severity badges, pixel area charts, and side-by-side scan exhibits.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>ReportLab 4.0+ Engine</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Automated Severity Classification</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Cryptographic Timestamping</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Dual Viewport Image Embeddings</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Radiology Recommendation Logic</span>
+                    </div>
+                </div>
+
+                <!-- Layer 6: Quality Assurance & Verification Suite -->
+                <div class="tech-layer-card">
+                    <div class="tech-layer-header">
+                        <div class="tech-layer-icon">🧪</div>
+                        <div>
+                            <div class="tech-layer-title">Quality Assurance &amp; Testing</div>
+                            <span class="font-code text-cyan" style="font-size: 0.8rem;">Unit, Integration &amp; Dataset Tests</span>
+                        </div>
+                    </div>
+                    <p class="tech-layer-desc">
+                        Comprehensive verification test suites across all 4 models verifying input tensor shapes, output channel remaps, severity calculations, and dataset ground-truth noise isolation.
+                    </p>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Python Unittest TestSuites</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>PyTest Integration Harness</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Dataset Noise Verification Suite</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Model Independence Isolation Tests</span>
+                        <span class="tech-pill"><span class="tech-pill-dot"></span>Git Version Control</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. Agile Methodology & Software Engineering Life Cycle -->
+    <section id="agile" class="section agile-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">Agile Methodology &amp; Engineering Lifecycle</h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Developed following the Agile Scrum framework across iterative 2-week sprint cycles with continuous integration, test-driven validation, and clinical user stories.</p>
+            </div>
+
+            <!-- Agile Pillars -->
+            <div class="agile-pillars-grid">
+                <div class="agile-pillar-card">
+                    <div class="pillar-num">PILLAR 01</div>
+                    <div class="pillar-title">Iterative Scrum Cadence</div>
+                    <p class="pillar-desc">2-week focused sprints with daily standups, backlog grooming, sprint reviews, and clinical artifact verification.</p>
+                </div>
+                <div class="agile-pillar-card">
+                    <div class="pillar-num">PILLAR 02</div>
+                    <div class="pillar-title">Test-Driven Validation (TDD)</div>
+                    <p class="pillar-desc">Automated unit test suites for all 4 models ensuring zero regressions during model updates and feature expansions.</p>
+                </div>
+                <div class="agile-pillar-card">
+                    <div class="pillar-num">PILLAR 03</div>
+                    <div class="pillar-title">Modular &amp; SOLID Architecture</div>
+                    <p class="pillar-desc">Loose coupling between UI, REST controllers, predictor abstraction layers, and model loader singletons.</p>
+                </div>
+                <div class="agile-pillar-card">
+                    <div class="pillar-num">PILLAR 04</div>
+                    <div class="pillar-title">Domain-Driven Healthcare Design</div>
+                    <p class="pillar-desc">Incorporating radiology DICOM standards, clinical severity thresholds (Mild, Moderate, Severe, Critical), and PDF report exports.</p>
+                </div>
+            </div>
+
+            <!-- 6-Sprint Roadmap -->
+            <div class="sprint-timeline">
+                <h3 style="font-family: var(--font-header); font-size: 1.6rem; color: #f8fafc; margin-bottom: 24px; text-align: center;">
+                    Sprint Roadmap &amp; Milestone Deliverables
+                </h3>
+                <div class="sprint-grid">
+                    <!-- Sprint 1 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 1</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Requirement Engineering &amp; Data Pipeline</div>
+                        <div class="sprint-goal">Goal: Establish SRS, HDF5 3D ingestion, and noise physics algorithms.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Authored Software Requirements Specification (SRS) &amp; Architecture doc</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Built HDF5 volume slice extractor (128 × 362 × 362)</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Formulated Gaussian, Poisson, Speckle, Salt&amp;Pepper, RVIN, and Periodic noise generators</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sprint 2 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 2</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Multi-Model Design &amp; Deep Learning Training</div>
+                        <div class="sprint-goal">Goal: Design and train 4 specialized deep learning architectures.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Trained Model 1 (U-Net++): 98.86% Dice score on Gaussian/Poisson noise</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Implemented Model 2 (Attention U-Net) for Poisson + Speckle segmentation</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Built Model 3 (DeepLabV3+ ASPP) for Salt-Pepper and RVIN isolation</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Trained Model 4 (NoiseCNN) for Quantization &amp; Periodic noise classification</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sprint 3 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 3</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Backend API &amp; Model Serving Engine</div>
+                        <div class="sprint-goal">Goal: Construct unified Flask REST endpoints and model loaders.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Developed Flask REST microservices with memory-efficient CPU/GPU loaders</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Implemented dedicated endpoints (/predict, /predict/model2, /predict/model3, /predict/model4)</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Added multi-level clinical severity calculators (Mild &lt;5%, Moderate 5-15%, Severe 15-30%, Critical &gt;30%)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sprint 4 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 4</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Clinical Diagnostic UI &amp; Interactive Frontend</div>
+                        <div class="sprint-goal">Goal: Create premium glassmorphic UI with dynamic model switching.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Built responsive dark-mode medical UI with glassmorphic cards and CSS gradients</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Integrated 4-model dynamic switcher with instant state isolation</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Built dual-viewport comparison tool with real-time overlay transparency sliders</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Integrated 2D FFT spectrum magnitude viewer for Model 4</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sprint 5 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 5</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Quality Assurance &amp; Dataset Verification</div>
+                        <div class="sprint-goal">Goal: Full test-suite automation and ground-truth dataset testing.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Implemented unit and integration test suites (test_model.py, test_model2.py, test_model3.py, test_model4.py)</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Created end-to-end dataset verification suite (verify_dataset_models.py)</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Verified dual-noise localization and co-occurrence sensitivity across all models</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sprint 6 -->
+                    <div class="sprint-card">
+                        <div class="sprint-header">
+                            <span class="sprint-badge">SPRINT 6</span>
+                            <span class="sprint-status">Completed</span>
+                        </div>
+                        <div class="sprint-title">Automated PDF Reporting &amp; Deployment</div>
+                        <div class="sprint-goal">Goal: Clinical PDF generator, documentation, and production readiness.</div>
+                        <ul class="sprint-tasks">
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Implemented ReportLab clinical PDF generator with diagnostic badges &amp; metrics</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Added full project documentation, model architecture guides, and tech stack details</li>
+                            <li class="sprint-task"><span class="sprint-task-check">✓</span> Production server optimization and cross-platform verification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. System Workflow Section -->
+    <section class="section workflow-section">
+        <div class="container">
+            <div class="section-header-center">
+                <h2 class="section-title">System Workflow Pipeline</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <!-- Workflow Flowchart -->
+            <div class="workflow-flow">
+                <!-- Step 1 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📤</div>
+                    <div class="flow-title">Upload CT</div>
+                    <p class="flow-desc">Upload raw slice (PNG/JPEG)</p>
+                </div>
+                
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 2 -->
+                <div class="flow-step">
+                    <div class="flow-icon">⚙️</div>
+                    <div class="flow-title">Preprocessing</div>
+                    <p class="flow-desc">Resize (512x512) and normalize</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 3 -->
+                <div class="flow-step">
+                    <div class="flow-icon">🧠</div>
+                    <div class="flow-title">U-Net++ Model</div>
+                    <p class="flow-desc">Execute multi-class segmentation</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 4 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📍</div>
+                    <div class="flow-title">Noise Segmentation</div>
+                    <p class="flow-desc">Isolate artifact regions</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 5 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📊</div>
+                    <div class="flow-title">Severity Estimation</div>
+                    <p class="flow-desc">Compute percent area mapping</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 6 -->
+                <div class="flow-step">
+                    <div class="flow-icon">📦</div>
+                    <div class="flow-title">Bounding Box</div>
+                    <p class="flow-desc">Draw outlines and labels</p>
+                </div>
+
+                <div class="flow-arrow">➜</div>
+
+                <!-- Step 7 -->
+                <div class="flow-step">
+                    <div class="flow-icon">🖥️</div>
+                    <div class="flow-title">Results Dashboard</div>
+                    <p class="flow-desc">Serve annotated CT & charts</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. Footer -->
+    <footer class="app-footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-logo">LungCT <span>AI</span></div>
+                <p class="footer-sub">Multi-Noise Classification & Severity Analysis System</p>
+                <p class="footer-desc">A professional Software Engineering Capstone Project leveraging deep learning architectures to assist clinical imaging quality assessment.</p>
+            </div>
+            
+            <div class="footer-right">
+                <div class="footer-group">
+                    <h5>Technologies Deployed</h5>
+                    <ul>
+                        <li>PyTorch & U-Net++</li>
+                        <li>Flask & Python</li>
+                        <li>OpenCV & NumPy</li>
+                        <li>ReportLab PDF</li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h5>Educational Purposes</h5>
+                    <p class="disclaimer-note">Developed for educational and academic research. Model predictions should be clinically cross-referenced with medical imaging hardware.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LungCT AI. Software Engineering Capstone Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="js/script.js"></script>
+</body>
+</html>
