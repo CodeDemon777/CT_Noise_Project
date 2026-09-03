@@ -152,7 +152,10 @@ def load_model(model_path: str, device: str = None) -> nn.Module:
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found: {model_path}")
     
-    checkpoint = torch.load(model_path, map_location=device)
+    try:
+        checkpoint = torch.load(model_path, map_location=device, weights_only=False)
+    except TypeError:
+        checkpoint = torch.load(model_path, map_location=device)
 
     if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
         state_dict = checkpoint["model_state_dict"]
