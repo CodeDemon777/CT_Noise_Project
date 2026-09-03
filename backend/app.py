@@ -144,6 +144,14 @@ _predictor_m3 = None
 _predictor_m4 = None
 _model_lock = threading.Lock()
 
+import torch
+# Restrict CPU threads to prevent memory spikes on cloud instances
+try:
+    torch.set_num_threads(1)
+    torch.set_grad_enabled(False)
+except Exception:
+    pass
+
 def get_predictor_m1():
     global _predictor_m1
     if _predictor_m1 is None:
@@ -191,29 +199,6 @@ def is_model3_ready():
 
 def is_model4_ready():
     return _predictor_m4 is not None or MODEL4_PATH.exists()
-
-# Background Warmup Thread: allows port binding immediately on Render/Gunicorn
-def _warmup_background():
-    import time
-    time.sleep(1.0)
-    try:
-        get_predictor_m1()
-    except Exception as e:
-        print(f"Warmup notice Model 1: {e}")
-    try:
-        get_predictor_m2()
-    except Exception as e:
-        print(f"Warmup notice Model 2: {e}")
-    try:
-        get_predictor_m3()
-    except Exception as e:
-        print(f"Warmup notice Model 3: {e}")
-    try:
-        get_predictor_m4()
-    except Exception as e:
-        print(f"Warmup notice Model 4: {e}")
-
-threading.Thread(target=_warmup_background, daemon=True).start()
 
 
 @app.route("/")
