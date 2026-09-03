@@ -13,7 +13,7 @@ import TechStackSection from './components/TechStackSection';
 import AgileRoadmapSection from './components/AgileRoadmapSection';
 import Footer from './components/Footer';
 import ParticleCanvas from './components/ParticleCanvas';
-import { MODELS_CONFIG } from './utils/constants';
+import { MODELS_CONFIG, resolveApiUrl } from './utils/constants';
 
 export default function App() {
   const [activeModel, setActiveModel] = useState('model1');
@@ -61,7 +61,7 @@ export default function App() {
     formData.append('file', currentFile);
 
     try {
-      const response = await fetch(modelConfig.predictEndpoint, {
+      const response = await fetch(resolveApiUrl(modelConfig.predictEndpoint), {
         method: 'POST',
         body: formData,
       });
@@ -91,7 +91,7 @@ export default function App() {
     const modelConfig = MODELS_CONFIG[activeModel] || MODELS_CONFIG.model1;
 
     try {
-      const response = await fetch(modelConfig.demoEndpoint);
+      const response = await fetch(resolveApiUrl(modelConfig.demoEndpoint));
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));
         throw new Error(errJson.error || `Demo failed with status ${response.status}`);
@@ -100,7 +100,7 @@ export default function App() {
       const data = await response.json();
 
       if (data.original_url) {
-        setPreviewUrl(data.original_url);
+        setPreviewUrl(resolveApiUrl(data.original_url));
         setCurrentFile({ name: data.filename || 'demo_phantom.png' });
       }
 

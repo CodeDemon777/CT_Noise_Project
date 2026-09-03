@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FileText, Download, CheckCircle2, RefreshCw } from 'lucide-react';
-import { MODELS_CONFIG } from '../utils/constants';
+import { MODELS_CONFIG, resolveApiUrl } from '../utils/constants';
 
 export default function ReportDownloadCard({ activeModel, resultData, currentFile }) {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -18,7 +18,7 @@ export default function ReportDownloadCard({ activeModel, resultData, currentFil
     setIsDownloading(true);
     setDownloadSuccess(false);
 
-    const downloadUrl = `/report?filename=${encodeURIComponent(filename)}&model=${encodeURIComponent(activeModel)}`;
+    const downloadUrl = resolveApiUrl(`/report?filename=${encodeURIComponent(filename)}&model=${encodeURIComponent(activeModel)}`);
     const tempLink = document.createElement('a');
     tempLink.href = downloadUrl;
     tempLink.setAttribute('download', `${filename.replace(/\.[^/.]+$/, '')}_${activeModel}_report.pdf`);

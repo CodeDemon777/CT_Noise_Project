@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, ShieldCheck, Cpu, Layers, GitBranch, Download } from 'lucide-react';
+import { resolveApiUrl } from '../utils/constants';
 
 export default function Navbar() {
   const [serverOnline, setServerOnline] = useState(false);
 
   useEffect(() => {
-    fetch('/health')
+    fetch(resolveApiUrl('/health'))
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'healthy') setServerOnline(true);

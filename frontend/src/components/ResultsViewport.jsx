@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, Layers, Sliders, Maximize2, SplitSquareVertical, Search } from 'lucide-react';
-import { MODELS_CONFIG } from '../utils/constants';
+import { MODELS_CONFIG, resolveApiUrl } from '../utils/constants';
 import InspectionLoupe from './InspectionLoupe';
 
 export default function ResultsViewport({ activeModel, resultData, isLoading, rawImageUrl }) {
@@ -11,11 +11,11 @@ export default function ResultsViewport({ activeModel, resultData, isLoading, ra
   const modelConfig = MODELS_CONFIG[activeModel] || MODELS_CONFIG.model1;
 
   // Resolve Image URLs
-  let originalImg = rawImageUrl || resultData?.original_url;
-  let annotatedImg = resultData?.annotated_url || resultData?.images?.annotated;
-  let overlayImg = resultData?.overlay_url || resultData?.images?.overlay;
-  let maskImg = resultData?.images?.mask;
-  let spectrumImg = resultData?.images?.spectrum;
+  let originalImg = rawImageUrl || (resultData?.original_url ? resolveApiUrl(resultData.original_url) : null);
+  let annotatedImg = resultData?.annotated_url ? resolveApiUrl(resultData.annotated_url) : (resultData?.images?.annotated ? resolveApiUrl(resultData.images.annotated) : null);
+  let overlayImg = resultData?.overlay_url ? resolveApiUrl(resultData.overlay_url) : (resultData?.images?.overlay ? resolveApiUrl(resultData.images.overlay) : null);
+  let maskImg = resultData?.images?.mask ? resolveApiUrl(resultData.images.mask) : null;
+  let spectrumImg = resultData?.images?.spectrum ? resolveApiUrl(resultData.images.spectrum) : null;
 
   const handleSliderMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
