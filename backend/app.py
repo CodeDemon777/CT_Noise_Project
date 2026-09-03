@@ -201,6 +201,20 @@ def is_model4_ready():
     return _predictor_m4 is not None or MODEL4_PATH.exists()
 
 
+import mimetypes
+
+mimetypes.init()
+mimetypes.add_type("application/javascript", ".js")
+mimetypes.add_type("application/javascript", ".mjs")
+mimetypes.add_type("application/javascript", ".jsx")
+mimetypes.add_type("application/javascript", ".ts")
+mimetypes.add_type("application/javascript", ".tsx")
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("image/svg+xml", ".svg")
+mimetypes.add_type("application/json", ".json")
+mimetypes.add_type("application/wasm", ".wasm")
+
+
 @app.route("/")
 def index():
     """
@@ -208,28 +222,45 @@ def index():
     """
     dist_index = FRONTEND_DIR / "dist" / "index.html"
     if dist_index.exists():
-        return send_file(str(dist_index))
-    return send_file(str(FRONTEND_DIR / "index.html"))
+        return send_file(str(dist_index), mimetype="text/html")
+    return send_file(str(FRONTEND_DIR / "index.html"), mimetype="text/html")
 
 
 @app.route("/assets/<path:filename>")
 def serve_assets(filename):
-    return send_from_directory(str(FRONTEND_DIR / "dist" / "assets"), filename)
+    ext = Path(filename).suffix.lower()
+    mime = mimetypes.types_map.get(ext, None)
+    if ext in [".js", ".mjs", ".jsx", ".ts", ".tsx"]:
+        mime = "application/javascript"
+    elif ext == ".css":
+        mime = "text/css"
+    elif ext == ".svg":
+        mime = "image/svg+xml"
+    return send_from_directory(str(FRONTEND_DIR / "dist" / "assets"), filename, mimetype=mime)
+
+
+@app.route("/src/<path:filename>")
+def serve_src(filename):
+    ext = Path(filename).suffix.lower()
+    mime = "application/javascript" if ext in [".js", ".jsx", ".ts", ".tsx"] else "text/plain"
+    return send_from_directory(str(FRONTEND_DIR / "src"), filename, mimetype=mime)
 
 
 @app.route("/css/<path:filename>")
 def serve_css(filename):
-    return send_from_directory(str(FRONTEND_DIR / "css"), filename)
+    return send_from_directory(str(FRONTEND_DIR / "css"), filename, mimetype="text/css")
 
 
 @app.route("/js/<path:filename>")
 def serve_js(filename):
-    return send_from_directory(str(FRONTEND_DIR / "js"), filename)
+    return send_from_directory(str(FRONTEND_DIR / "js"), filename, mimetype="application/javascript")
 
 
 @app.route("/static/<path:filename>")
 def serve_static(filename):
-    return send_from_directory(str(STATIC_DIR), filename)
+    ext = Path(filename).suffix.lower()
+    mime = mimetypes.types_map.get(ext, None)
+    return send_from_directory(str(STATIC_DIR), filename, mimetype=mime)
 
 
 @app.route("/health", methods=["GET"])
