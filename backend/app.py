@@ -1,10 +1,12 @@
 """
 Flask Backend for LungCT AI Capstone Project
 Serves the web dashboard and handles REST API requests for upload, prediction, and report download.
+Optimized for zero-downtime lazy loading on Cloud Hosts (Render, Railway, Docker).
 """
 
 import os
 import sys
+import threading
 from pathlib import Path
 
 import cv2
@@ -61,8 +63,8 @@ app = Flask(
 # Security Configuration: 32MB Max Upload Limit
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 
-# Enable Cross-Origin Resource Sharing
-CORS(app)
+# Enable Cross-Origin Resource Sharing for all origins (supports Vercel frontend)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp', 'tif', 'tiff', 'dcm'}
 
@@ -104,7 +106,9 @@ def add_security_headers(response):
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     return response
 
 @app.errorhandler(413)
@@ -131,44 +135,85 @@ OUTPUTS_M3_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUTS_M4_DIR.mkdir(parents=True, exist_ok=True)
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load U-Net++ predictor on startup (Model 1)
-try:
-    predictor = CTPredictor(str(MODEL_PATH))
-    model_loaded = True
-    print(f"✅ U-Net++ Model (Model 1) loaded successfully from {MODEL_PATH}")
-except Exception as e:
-    print(f"❌ Failed to load Model 1: {e}")
-    model_loaded = False
+# ---------------------------------------------------------------------------
+# Lazy Singleton Model Loaders & Non-blocking Warmup
+# ---------------------------------------------------------------------------
+_predictor_m1 = None
+_predictor_m2 = None
+_predictor_m3 = None
+_predictor_m4 = None
+_model_lock = threading.Lock()
 
-# Load Attention U-Net predictor on startup (Model 2)
-try:
-    predictor_m2 = Model2Predictor(str(MODEL2_PATH))
-    model2_loaded = True
-    print(f"✅ Attention U-Net (Model 2) loaded successfully from {MODEL2_PATH}")
-except Exception as e:
-    print(f"❌ Failed to load Model 2: {e}")
-    predictor_m2 = None
-    model2_loaded = False
+def get_predictor_m1():
+    global _predictor_m1
+    if _predictor_m1 is None:
+        with _model_lock:
+            if _predictor_m1 is None:
+                _predictor_m1 = CTPredictor(str(MODEL_PATH))
+                print(f"✅ U-Net++ Model (Model 1) initialized from {MODEL_PATH}")
+    return _predictor_m1
 
-# Load DeepLabV3+ predictor on startup (Model 3)
-try:
-    predictor_m3 = Model3Predictor(str(MODEL3_PATH))
-    model3_loaded = True
-    print(f"✅ DeepLabV3+ (Model 3) loaded successfully from {MODEL3_PATH}")
-except Exception as e:
-    print(f"❌ Failed to load Model 3: {e}")
-    predictor_m3 = None
-    model3_loaded = False
+def get_predictor_m2():
+    global _predictor_m2
+    if _predictor_m2 is None:
+        with _model_lock:
+            if _predictor_m2 is None:
+                _predictor_m2 = Model2Predictor(str(MODEL2_PATH))
+                print(f"✅ Attention U-Net (Model 2) initialized from {MODEL2_PATH}")
+    return _predictor_m2
 
-# Load NoiseCNN predictor on startup (Model 4)
-try:
-    predictor_m4 = Model4Predictor(str(MODEL4_PATH))
-    model4_loaded = True
-    print(f"✅ NoiseCNN (Model 4) loaded successfully from {MODEL4_PATH}")
-except Exception as e:
-    print(f"❌ Failed to load Model 4: {e}")
-    predictor_m4 = None
-    model4_loaded = False
+def get_predictor_m3():
+    global _predictor_m3
+    if _predictor_m3 is None:
+        with _model_lock:
+            if _predictor_m3 is None:
+                _predictor_m3 = Model3Predictor(str(MODEL3_PATH))
+                print(f"✅ DeepLabV3+ (Model 3) initialized from {MODEL3_PATH}")
+    return _predictor_m3
+
+def get_predictor_m4():
+    global _predictor_m4
+    if _predictor_m4 is None:
+        with _model_lock:
+            if _predictor_m4 is None:
+                _predictor_m4 = Model4Predictor(str(MODEL4_PATH))
+                print(f"✅ NoiseCNN (Model 4) initialized from {MODEL4_PATH}")
+    return _predictor_m4
+
+def is_model1_ready():
+    return _predictor_m1 is not None or MODEL_PATH.exists()
+
+def is_model2_ready():
+    return _predictor_m2 is not None or MODEL2_PATH.exists()
+
+def is_model3_ready():
+    return _predictor_m3 is not None or MODEL3_PATH.exists()
+
+def is_model4_ready():
+    return _predictor_m4 is not None or MODEL4_PATH.exists()
+
+# Background Warmup Thread: allows port binding immediately on Render/Gunicorn
+def _warmup_background():
+    import time
+    time.sleep(1.0)
+    try:
+        get_predictor_m1()
+    except Exception as e:
+        print(f"Warmup notice Model 1: {e}")
+    try:
+        get_predictor_m2()
+    except Exception as e:
+        print(f"Warmup notice Model 2: {e}")
+    try:
+        get_predictor_m3()
+    except Exception as e:
+        print(f"Warmup notice Model 3: {e}")
+    try:
+        get_predictor_m4()
+    except Exception as e:
+        print(f"Warmup notice Model 4: {e}")
+
+threading.Thread(target=_warmup_background, daemon=True).start()
 
 
 @app.route("/")
@@ -211,34 +256,34 @@ def health():
         "status": "healthy",
         "models": {
             "model1": {
-                "loaded": model_loaded,
+                "loaded": is_model1_ready(),
                 "name": "U-Net++",
                 "path": str(MODEL_PATH),
                 "classes": ["Gaussian", "Poisson"],
             },
             "model2": {
-                "loaded": model2_loaded,
+                "loaded": is_model2_ready(),
                 "name": "Attention U-Net",
                 "path": str(MODEL2_PATH),
                 "classes": ["Poisson", "Speckle"],
             },
             "model3": {
-                "loaded": model3_loaded,
+                "loaded": is_model3_ready(),
                 "name": "DeepLabV3+",
                 "path": str(MODEL3_PATH),
                 "classes": ["Salt & Pepper", "RVIN"],
             },
             "model4": {
-                "loaded": model4_loaded,
+                "loaded": is_model4_ready(),
                 "name": "NoiseCNN",
                 "path": str(MODEL4_PATH),
                 "classes": ["Quantization", "Periodic"],
             },
         },
-        "model_loaded": model_loaded,
-        "model2_loaded": model2_loaded,
-        "model3_loaded": model3_loaded,
-        "model4_loaded": model4_loaded,
+        "model_loaded": is_model1_ready(),
+        "model2_loaded": is_model2_ready(),
+        "model3_loaded": is_model3_ready(),
+        "model4_loaded": is_model4_ready(),
     })
 
 
@@ -324,11 +369,7 @@ def api_docs():
 def demo():
     """
     Generates a realistic CT scan phantom with noise, runs prediction, and returns analysis.
-    Allows testing the app immediately without uploading an external file.
     """
-    if not model_loaded:
-        return jsonify({"error": "Inference server state error: U-Net++ model is not loaded."}), 500
-        
     try:
         from scripts.generate_realistic_ct import create_realistic_ct_phantom
         
@@ -343,7 +384,8 @@ def demo():
             return jsonify({"error": "Failed to read generated demo scan."}), 500
             
         # Step 1: Model Segmentation
-        predicted_mask = predictor.predict(str(file_path))
+        predictor_m1 = get_predictor_m1()
+        predicted_mask = predictor_m1.predict(str(file_path))
         
         # Step 2: Severity Assessment
         calculator = SeverityCalculator()
@@ -360,7 +402,6 @@ def demo():
             str(output_path)
         )
         
-        # Generate overlay image URL
         overlay_filename = f"{Path(filename).stem}_overlay.png"
         
         response_data = {
@@ -379,35 +420,6 @@ def demo():
             "regions": visuals.get("regions", [])
         }
         
-        # --- MODEL 2 (Attention U-Net) Independent Pipeline ---
-        m2_data = None
-        if model2_loaded and predictor_m2 is not None:
-            try:
-                m2_mask = predictor_m2.predict(str(file_path))
-                m2_report = calculate_severity_model2(m2_mask)
-                m2_visualizer = Model2Visualizer(image)
-                m2_output_filename = f"{Path(filename).stem}_m2_result.png"
-                m2_output_path = OUTPUTS_M2_DIR / m2_output_filename
-                m2_visuals = m2_visualizer.generate_full_visualization(
-                    m2_mask, m2_report, str(m2_output_path)
-                )
-                stem = Path(filename).stem
-                m2_data = {
-                    "model": "Model 2",
-                    "architecture": "Attention U-Net",
-                    "noise": m2_report["noise"],
-                    "summary": m2_report["summary"],
-                    "images": {
-                        "mask": f"/static/outputs_m2/{stem}_m2_result_mask.png",
-                        "overlay": f"/static/outputs_m2/{stem}_m2_result_overlay.png",
-                        "annotated": f"/static/outputs_m2/{m2_output_filename}",
-                    }
-                }
-            except Exception as e2:
-                print(f"Model 2 Demo Pipeline Error: {e2}")
-                m2_data = {"error": str(e2)}
-
-        response_data["model2"] = m2_data
         return jsonify(response_data)
         
     except Exception as e:
@@ -418,65 +430,50 @@ def demo():
 @app.route("/upload", methods=["POST"])
 def upload():
     """
-    Endpoint for uploading a raw Lung CT scan image.
-    Saves image under /static/uploads/ for diagnostic preview.
+    Endpoint for uploading a raw Lung CT scan image with security validation.
     """
     if "file" not in request.files:
         return jsonify({"error": "No file key found in multipart/form-data"}), 400
         
     file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Selected filename is empty"}), 400
+    clean_name, err = sanitize_and_save_upload(file)
+    if err:
+        return jsonify({"error": err}), 400
         
-    try:
-        file_path = UPLOADS_DIR / file.filename
-        file.save(str(file_path))
-        
-        return jsonify({
-            "success": True,
-            "filename": file.filename,
-            "url": f"/static/uploads/{file.filename}"
-        })
-    except Exception as e:
-        return jsonify({"error": f"Upload write failed: {str(e)}"}), 500
+    return jsonify({
+        "success": True,
+        "filename": clean_name,
+        "url": f"/static/uploads/{clean_name}"
+    })
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
     """
-    Run machine learning inference pipeline on upload.
-    Pipeline: Input Upload -> Preprocessing -> Model Predict -> Severity Calculator -> Visualization Overlay -> JSON response.
+    Run Model 1 (U-Net++) machine learning inference pipeline on upload.
     """
-    if not model_loaded:
-        return jsonify({"error": "Inference server state error: U-Net++ model is not loaded."}), 500
-        
     if "file" not in request.files:
         return jsonify({"error": "No file key found in multipart/form-data"}), 400
         
     file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Selected filename is empty"}), 400
+    clean_name, err = sanitize_and_save_upload(file)
+    if err:
+        return jsonify({"error": err}), 400
         
+    file_path = UPLOADS_DIR / clean_name
     try:
-        # Save file to uploads folder
-        file_path = UPLOADS_DIR / file.filename
-        file.save(str(file_path))
-        
-        # Read image using OpenCV (grayscale for medical imaging profiles)
         image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
         if image is None:
             return jsonify({"error": "Invalid file format or corrupted medical image."}), 400
             
-        # Step 1: Model Segmentation
-        predicted_mask = predictor.predict(str(file_path))
+        predictor_m1 = get_predictor_m1()
+        predicted_mask = predictor_m1.predict(str(file_path))
         
-        # Step 2: Severity Assessment
         calculator = SeverityCalculator()
         severity_report = calculator.get_detailed_report(predicted_mask)
         
-        # Step 3: Draw Diagnostic Bounding Boxes and Region Highlights
         visualizer = CTVisualizer(image)
-        output_filename = f"{Path(file.filename).stem}_result.png"
+        output_filename = f"{Path(clean_name).stem}_result.png"
         output_path = OUTPUTS_DIR / output_filename
         
         visuals = visualizer.generate_full_visualization(
@@ -485,92 +482,53 @@ def predict():
             str(output_path)
         )
         
-        # Generate overlay image URL
-        overlay_filename = f"{Path(file.filename).stem}_overlay.png"
+        overlay_filename = f"{Path(clean_name).stem}_overlay.png"
         
-        response_data = {
+        return jsonify({
             "success": True,
-            "filename": file.filename,
+            "filename": clean_name,
             "gaussian": severity_report["gaussian"]["percentage"],
             "poisson": severity_report["poisson"]["percentage"],
             "gaussian_level": severity_report["gaussian"]["level"],
             "poisson_level": severity_report["poisson"]["level"],
             "total_noise": severity_report["summary"]["total_noise_percentage"],
             "total_level": severity_report["summary"]["total_noise_level"],
-            "original_url": f"/static/uploads/{file.filename}",
+            "original_url": f"/static/uploads/{clean_name}",
             "annotated_url": f"/static/outputs/{output_filename}",
             "overlay_url": f"/static/outputs/{overlay_filename}",
             "pixels": severity_report["pixels"],
             "regions": visuals.get("regions", [])
-        }
-        
-        # --- MODEL 2 (Attention U-Net) Independent Pipeline ---
-        m2_data = None
-        if model2_loaded and predictor_m2 is not None:
-            try:
-                m2_mask = predictor_m2.predict(str(file_path))
-                m2_report = calculate_severity_model2(m2_mask)
-                m2_visualizer = Model2Visualizer(image)
-                stem = Path(file.filename).stem
-                m2_output_filename = f"{stem}_m2_result.png"
-                m2_output_path = OUTPUTS_M2_DIR / m2_output_filename
-                m2_visuals = m2_visualizer.generate_full_visualization(
-                    m2_mask, m2_report, str(m2_output_path)
-                )
-                m2_data = {
-                    "model": "Model 2",
-                    "architecture": "Attention U-Net",
-                    "noise": m2_report["noise"],
-                    "summary": m2_report["summary"],
-                    "images": {
-                        "mask": f"/static/outputs_m2/{stem}_m2_result_mask.png",
-                        "overlay": f"/static/outputs_m2/{stem}_m2_result_overlay.png",
-                        "annotated": f"/static/outputs_m2/{m2_output_filename}",
-                    }
-                }
-            except Exception as e2:
-                print(f"Model 2 Predict Pipeline Error: {e2}")
-                m2_data = {"error": str(e2)}
-
-        response_data["model2"] = m2_data
-        return jsonify(response_data)
+        })
         
     except Exception as e:
         print(f"Prediction Pipeline Error: {e}")
         return jsonify({"error": f"AI inference failed: {str(e)}"}), 500
 
 
-
 @app.route("/predict/model2", methods=["POST"])
 def predict_model2():
     """
     Standalone Model 2 (Attention U-Net) inference endpoint.
-    Runs ONLY the Attention U-Net pipeline — completely independent of Model 1.
-    Returns Poisson + Speckle segmentation, severity, and visualization URLs.
     """
-    if not model2_loaded or predictor_m2 is None:
-        return jsonify({"error": "Model 2 (Attention U-Net) is not loaded."}), 500
-
     if "file" not in request.files:
         return jsonify({"error": "No file key found in multipart/form-data"}), 400
 
     file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Selected filename is empty"}), 400
+    clean_name, err = sanitize_and_save_upload(file)
+    if err:
+        return jsonify({"error": err}), 400
 
+    file_path = UPLOADS_DIR / clean_name
     try:
-        file_path = UPLOADS_DIR / file.filename
-        file.save(str(file_path))
-
         image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
         if image is None:
             return jsonify({"error": "Invalid file format or corrupted image."}), 400
 
-        # Model 2 Pipeline
+        predictor_m2 = get_predictor_m2()
         m2_mask = predictor_m2.predict(str(file_path))
         m2_report = calculate_severity_model2(m2_mask)
         m2_visualizer = Model2Visualizer(image)
-        stem = Path(file.filename).stem
+        stem = Path(clean_name).stem
         m2_output_filename = f"{stem}_m2_result.png"
         m2_output_path = OUTPUTS_M2_DIR / m2_output_filename
         m2_visualizer.generate_full_visualization(m2_mask, m2_report, str(m2_output_path))
@@ -579,8 +537,8 @@ def predict_model2():
             "success": True,
             "model": "Model 2",
             "architecture": "Attention U-Net",
-            "filename": file.filename,
-            "original_url": f"/static/uploads/{file.filename}",
+            "filename": clean_name,
+            "original_url": f"/static/uploads/{clean_name}",
             "noise": m2_report["noise"],
             "summary": m2_report["summary"],
             "images": {
@@ -598,11 +556,8 @@ def predict_model2():
 @app.route("/demo/model2", methods=["GET"])
 def demo_model2():
     """
-    Standalone Model 2 demo — generates a CT phantom and runs ONLY the Attention U-Net.
+    Standalone Model 2 demo — generates a CT phantom and runs Attention U-Net.
     """
-    if not model2_loaded or predictor_m2 is None:
-        return jsonify({"error": "Model 2 (Attention U-Net) is not loaded."}), 500
-
     try:
         from scripts.generate_realistic_ct import create_realistic_ct_phantom_model2
 
@@ -614,6 +569,7 @@ def demo_model2():
         if image is None:
             return jsonify({"error": "Failed to read generated demo scan."}), 500
 
+        predictor_m2 = get_predictor_m2()
         m2_mask = predictor_m2.predict(str(file_path))
         m2_report = calculate_severity_model2(m2_mask)
         m2_visualizer = Model2Visualizer(image)
@@ -642,38 +598,30 @@ def demo_model2():
         return jsonify({"error": f"Model 2 demo failed: {str(e)}"}), 500
 
 
-# =====================================================================
-# MODEL 3: DeepLabV3+ (Salt & Pepper + RVIN) Endpoints
-# =====================================================================
-
 @app.route("/predict/model3", methods=["POST"])
 def predict_model3():
     """
     Standalone Model 3 (DeepLabV3+) inference endpoint.
-    Returns Salt & Pepper and RVIN noise segmentation, severity, and visualization.
     """
-    if not model3_loaded or predictor_m3 is None:
-        return jsonify({"error": "Model 3 (DeepLabV3+) is not loaded."}), 500
-
     if "file" not in request.files:
         return jsonify({"error": "No file key found in multipart/form-data"}), 400
 
     file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Selected filename is empty"}), 400
+    clean_name, err = sanitize_and_save_upload(file)
+    if err:
+        return jsonify({"error": err}), 400
 
+    file_path = UPLOADS_DIR / clean_name
     try:
-        file_path = UPLOADS_DIR / file.filename
-        file.save(str(file_path))
-
         image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
         if image is None:
             return jsonify({"error": "Invalid file format or corrupted image."}), 400
 
+        predictor_m3 = get_predictor_m3()
         m3_mask = predictor_m3.predict(str(file_path))
         m3_report = calculate_severity_model3(m3_mask)
         m3_visualizer = Model3Visualizer(image)
-        stem = Path(file.filename).stem
+        stem = Path(clean_name).stem
         m3_output_filename = f"{stem}_m3_result.png"
         m3_output_path = OUTPUTS_M3_DIR / m3_output_filename
         m3_visualizer.generate_full_visualization(m3_mask, m3_report, str(m3_output_path))
@@ -682,8 +630,8 @@ def predict_model3():
             "success": True,
             "model": "Model 3",
             "architecture": "DeepLabV3+",
-            "filename": file.filename,
-            "original_url": f"/static/uploads/{file.filename}",
+            "filename": clean_name,
+            "original_url": f"/static/uploads/{clean_name}",
             "noise": m3_report["noise"],
             "summary": m3_report["summary"],
             "images": {
@@ -703,9 +651,6 @@ def demo_model3():
     """
     Standalone Model 3 demo — generates a CT phantom and runs DeepLabV3+.
     """
-    if not model3_loaded or predictor_m3 is None:
-        return jsonify({"error": "Model 3 (DeepLabV3+) is not loaded."}), 500
-
     try:
         from scripts.generate_realistic_ct import create_realistic_ct_phantom
 
@@ -717,6 +662,7 @@ def demo_model3():
         if image is None:
             return jsonify({"error": "Failed to read generated demo scan."}), 500
 
+        predictor_m3 = get_predictor_m3()
         m3_mask = predictor_m3.predict(str(file_path))
         m3_report = calculate_severity_model3(m3_mask)
         m3_visualizer = Model3Visualizer(image)
@@ -745,38 +691,30 @@ def demo_model3():
         return jsonify({"error": f"Model 3 demo failed: {str(e)}"}), 500
 
 
-# =====================================================================
-# MODEL 4: NoiseCNN (Quantization + Periodic Noise) Endpoints
-# =====================================================================
-
 @app.route("/predict/model4", methods=["POST"])
 def predict_model4():
     """
     Standalone Model 4 (NoiseCNN) inference endpoint.
-    Returns Quantization and Periodic noise probability classification and spectrum visualization.
     """
-    if not model4_loaded or predictor_m4 is None:
-        return jsonify({"error": "Model 4 (NoiseCNN) is not loaded."}), 500
-
     if "file" not in request.files:
         return jsonify({"error": "No file key found in multipart/form-data"}), 400
 
     file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Selected filename is empty"}), 400
+    clean_name, err = sanitize_and_save_upload(file)
+    if err:
+        return jsonify({"error": err}), 400
 
+    file_path = UPLOADS_DIR / clean_name
     try:
-        file_path = UPLOADS_DIR / file.filename
-        file.save(str(file_path))
-
         image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
         if image is None:
             return jsonify({"error": "Invalid file format or corrupted image."}), 400
 
+        predictor_m4 = get_predictor_m4()
         m4_probs = predictor_m4.predict(str(file_path))
         m4_report = calculate_severity_model4(m4_probs)
         m4_visualizer = Model4Visualizer(image)
-        stem = Path(file.filename).stem
+        stem = Path(clean_name).stem
         m4_output_filename = f"{stem}_m4_result.png"
         m4_output_path = OUTPUTS_M4_DIR / m4_output_filename
         m4_visualizer.generate_full_visualization(m4_probs, m4_report, str(m4_output_path))
@@ -785,8 +723,8 @@ def predict_model4():
             "success": True,
             "model": "Model 4",
             "architecture": "NoiseCNN",
-            "filename": file.filename,
-            "original_url": f"/static/uploads/{file.filename}",
+            "filename": clean_name,
+            "original_url": f"/static/uploads/{clean_name}",
             "predicted_class": m4_report["predicted_class"],
             "confidence": m4_report["confidence"],
             "noise": m4_report["noise"],
@@ -808,9 +746,6 @@ def demo_model4():
     """
     Standalone Model 4 demo — generates a CT phantom and runs NoiseCNN.
     """
-    if not model4_loaded or predictor_m4 is None:
-        return jsonify({"error": "Model 4 (NoiseCNN) is not loaded."}), 500
-
     try:
         from scripts.generate_realistic_ct import create_realistic_ct_phantom
 
@@ -822,6 +757,7 @@ def demo_model4():
         if image is None:
             return jsonify({"error": "Failed to read generated demo scan."}), 500
 
+        predictor_m4 = get_predictor_m4()
         m4_probs = predictor_m4.predict(str(file_path))
         m4_report = calculate_severity_model4(m4_probs)
         m4_visualizer = Model4Visualizer(image)
@@ -874,22 +810,19 @@ def report():
     
     try:
         if model_key in ["model2", "m2"]:
-            if not model2_loaded or predictor_m2 is None:
-                return jsonify({"error": "Model 2 (Attention U-Net) is not loaded."}), 500
+            predictor_m2 = get_predictor_m2()
             annotated_path = OUTPUTS_M2_DIR / f"{stem}_m2_result.png"
             if not annotated_path.exists():
                 annotated_path = OUTPUTS_M2_DIR / f"{stem}_result.png"
             m2_mask = predictor_m2.predict(str(original_path))
             severity_report = calculate_severity_model2(m2_mask)
             
-            # If annotated image missing, generate it
             if not annotated_path.exists():
                 img = cv2.imread(str(original_path), cv2.IMREAD_GRAYSCALE)
                 Model2Visualizer(img).generate_full_visualization(m2_mask, severity_report, str(annotated_path))
 
         elif model_key in ["model3", "m3"]:
-            if not model3_loaded or predictor_m3 is None:
-                return jsonify({"error": "Model 3 (DeepLabV3+) is not loaded."}), 500
+            predictor_m3 = get_predictor_m3()
             annotated_path = OUTPUTS_M3_DIR / f"{stem}_m3_result.png"
             if not annotated_path.exists():
                 annotated_path = OUTPUTS_M3_DIR / f"{stem}_result.png"
@@ -901,8 +834,7 @@ def report():
                 Model3Visualizer(img).generate_full_visualization(m3_mask, severity_report, str(annotated_path))
 
         elif model_key in ["model4", "m4"]:
-            if not model4_loaded or predictor_m4 is None:
-                return jsonify({"error": "Model 4 (NoiseCNN) is not loaded."}), 500
+            predictor_m4 = get_predictor_m4()
             annotated_path = OUTPUTS_M4_DIR / f"{stem}_m4_result.png"
             if not annotated_path.exists():
                 annotated_path = OUTPUTS_M4_DIR / f"{stem}_result.png"
@@ -914,8 +846,9 @@ def report():
                 Model4Visualizer(img).generate_full_visualization(m4_probs, severity_report, str(annotated_path))
 
         else: # Model 1 (U-Net++)
+            predictor_m1 = get_predictor_m1()
             annotated_path = OUTPUTS_DIR / f"{stem}_result.png"
-            predicted_mask = predictor.predict(str(original_path))
+            predicted_mask = predictor_m1.predict(str(original_path))
             calculator = SeverityCalculator()
             severity_report = calculator.get_detailed_report(predicted_mask)
             
@@ -940,10 +873,57 @@ def report():
         return jsonify({"error": f"Failed to generate clinical PDF: {str(e)}"}), 500
 
 
+@app.route("/batch", methods=["POST"])
+def batch_predict():
+    """
+    Batch inference pipeline for multiple CT images.
+    """
+    if "files" not in request.files:
+        return jsonify({"error": "No files key found in multipart/form-data"}), 400
+
+    files = request.files.getlist("files")
+    if not files or files[0].filename == "":
+        return jsonify({"error": "No files uploaded"}), 400
+
+    results = []
+    predictor_m1 = get_predictor_m1()
+    calculator = SeverityCalculator()
+
+    for file in files:
+        clean_name, err = sanitize_and_save_upload(file)
+        if err:
+            results.append({"filename": file.filename, "error": err})
+            continue
+
+        file_path = UPLOADS_DIR / clean_name
+        try:
+            image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
+            if image is None:
+                results.append({"filename": clean_name, "error": "Invalid image format"})
+                continue
+
+            predicted_mask = predictor_m1.predict(str(file_path))
+            severity_report = calculator.get_detailed_report(predicted_mask)
+            visualizer = CTVisualizer(image)
+            output_filename = f"{Path(clean_name).stem}_result.png"
+            output_path = OUTPUTS_DIR / output_filename
+            visualizer.generate_full_visualization(predicted_mask, severity_report, str(output_path))
+
+            results.append({
+                "filename": clean_name,
+                "gaussian": severity_report["gaussian"]["percentage"],
+                "poisson": severity_report["poisson"]["percentage"],
+                "total_noise": severity_report["summary"]["total_noise_percentage"],
+                "total_level": severity_report["summary"]["total_noise_level"],
+                "annotated_url": f"/static/outputs/{output_filename}"
+            })
+        except Exception as e:
+            results.append({"filename": clean_name, "error": str(e)})
+
+    return jsonify({"success": True, "count": len(results), "results": results})
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     print(f"Launching LungCT AI Flask server at http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
-
-
-

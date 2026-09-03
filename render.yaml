@@ -3,8 +3,7 @@ services:
     name: ct-noise-backend
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT backend.app:app
-    plan: starter
+    startCommand: gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 180
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
