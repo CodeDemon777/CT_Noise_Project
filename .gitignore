@@ -11,9 +11,9 @@ python_runtime/
 # Node & Frontend Build
 node_modules/
 frontend/node_modules/
-dist/
-build/
 .npm/
+!frontend/dist/
+!frontend/dist/**
 
 # Testing & Linting
 .pytest_cache/
