@@ -1,4 +1,6 @@
-@charset "UTF-8";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ==========================================================================
    LungCT AI — Modern Glassmorphism & Cyber-Medical Design System
@@ -42,8 +44,6 @@
 
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -146,51 +146,6 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 10;
 }
 
-/* Pulsing Radar Dot */
-@keyframes pulseRadar {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
-  }
-}
-
-.radar-dot {
-  width: 10px;
-  height: 10px;
-  background-color: var(--accent-cyan);
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulseRadar 2s infinite;
-}
-
-.radar-dot-emerald {
-  background-color: var(--accent-emerald);
-  animation: pulseRadarEmerald 2s infinite;
-}
-
-@keyframes pulseRadarEmerald {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-}
-
 /* Button & Pill Badges */
 .badge-pill {
   display: inline-flex;
@@ -267,23 +222,4 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
   color: var(--accent-cyan);
-}
-
-/* Gradient Text */
-.gradient-text-cyan {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-text-amber {
-  background: linear-gradient(135deg, #fbbf24 0%, #f43f5e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-text-purple {
-  background: linear-gradient(135deg, #c084fc 0%, #38bdf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
