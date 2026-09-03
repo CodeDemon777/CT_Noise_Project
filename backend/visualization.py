@@ -36,34 +36,15 @@ class CTVisualizer:
     
     def get_bounding_boxes(self, mask: np.ndarray, class_id: int, min_size: int = 10) -> list:
         """
-        Extract bounding boxes for a specific class
-        
-        Args:
-            mask: Segmentation mask
-            class_id: Class ID to extract boxes for
-            min_size: Minimum bounding box size to consider
-        
-        Returns:
-            List of bounding boxes [(x, y, w, h), ...]
+        Extract bounding boxes for a specific class in O(1) OpenCV contours without ndimage bottleneck.
         """
-        # Create binary mask for specific class
         class_mask = (mask == class_id).astype(np.uint8)
-        
-        # Label connected components
-        labeled_array, num_features = ndimage.label(class_mask)
-        
+        contours, _ = cv2.findContours(class_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         bboxes = []
-        for i in range(1, num_features + 1):
-            component = (labeled_array == i).astype(np.uint8)
-            contours, _ = cv2.findContours(component, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            
-            for contour in contours:
-                x, y, w, h = cv2.boundingRect(contour)
-                
-                # Filter small boxes
-                if w >= min_size and h >= min_size:
-                    bboxes.append((x, y, w, h))
-        
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            if w >= min_size and h >= min_size:
+                bboxes.append((x, y, w, h))
         return bboxes
     
     def draw_boxes(self, mask: np.ndarray, line_thickness: int = 2, min_area: float = 50.0) -> Tuple[np.ndarray, list]:
