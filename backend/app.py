@@ -149,15 +149,11 @@ OUTPUTS_M4_DIR.mkdir(parents=True, exist_ok=True)
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# Lazy Singleton Model Loaders & Non-blocking Warmup
+# Dynamic Single-Model LRU Memory Manager (Prevents 512MB OOM Crashes)
 # ---------------------------------------------------------------------------
-_predictor_m1 = None
-_predictor_m2 = None
-_predictor_m3 = None
-_predictor_m4 = None
-_model_lock = threading.Lock()
-
+import gc
 import torch
+
 # Restrict CPU threads to prevent memory spikes on cloud instances
 try:
     torch.set_num_threads(1)
@@ -165,40 +161,64 @@ try:
 except Exception:
     pass
 
+_predictor_m1 = None
+_predictor_m2 = None
+_predictor_m3 = None
+_predictor_m4 = None
+_active_model_name = None
+_model_lock = threading.Lock()
+
 def get_predictor_m1():
-    global _predictor_m1
-    if _predictor_m1 is None:
-        with _model_lock:
-            if _predictor_m1 is None:
-                _predictor_m1 = CTPredictor(str(MODEL_PATH))
-                print(f"✅ U-Net++ Model (Model 1) initialized from {MODEL_PATH}")
+    global _predictor_m1, _predictor_m2, _predictor_m3, _predictor_m4, _active_model_name
+    with _model_lock:
+        if _active_model_name != "model1" or _predictor_m1 is None:
+            # Free other models from RAM to stay well below 512MB
+            _predictor_m2 = None
+            _predictor_m3 = None
+            _predictor_m4 = None
+            gc.collect()
+            _predictor_m1 = CTPredictor(str(MODEL_PATH), device="cpu")
+            _active_model_name = "model1"
+            print(f"✅ Active model set to Model 1 (U-Net++)")
     return _predictor_m1
 
 def get_predictor_m2():
-    global _predictor_m2
-    if _predictor_m2 is None:
-        with _model_lock:
-            if _predictor_m2 is None:
-                _predictor_m2 = Model2Predictor(str(MODEL2_PATH))
-                print(f"✅ Attention U-Net (Model 2) initialized from {MODEL2_PATH}")
+    global _predictor_m1, _predictor_m2, _predictor_m3, _predictor_m4, _active_model_name
+    with _model_lock:
+        if _active_model_name != "model2" or _predictor_m2 is None:
+            _predictor_m1 = None
+            _predictor_m3 = None
+            _predictor_m4 = None
+            gc.collect()
+            _predictor_m2 = Model2Predictor(str(MODEL2_PATH), device="cpu")
+            _active_model_name = "model2"
+            print(f"✅ Active model set to Model 2 (Attention U-Net)")
     return _predictor_m2
 
 def get_predictor_m3():
-    global _predictor_m3
-    if _predictor_m3 is None:
-        with _model_lock:
-            if _predictor_m3 is None:
-                _predictor_m3 = Model3Predictor(str(MODEL3_PATH))
-                print(f"✅ DeepLabV3+ (Model 3) initialized from {MODEL3_PATH}")
+    global _predictor_m1, _predictor_m2, _predictor_m3, _predictor_m4, _active_model_name
+    with _model_lock:
+        if _active_model_name != "model3" or _predictor_m3 is None:
+            _predictor_m1 = None
+            _predictor_m2 = None
+            _predictor_m4 = None
+            gc.collect()
+            _predictor_m3 = Model3Predictor(str(MODEL3_PATH), device="cpu")
+            _active_model_name = "model3"
+            print(f"✅ Active model set to Model 3 (DeepLabV3+)")
     return _predictor_m3
 
 def get_predictor_m4():
-    global _predictor_m4
-    if _predictor_m4 is None:
-        with _model_lock:
-            if _predictor_m4 is None:
-                _predictor_m4 = Model4Predictor(str(MODEL4_PATH))
-                print(f"✅ NoiseCNN (Model 4) initialized from {MODEL4_PATH}")
+    global _predictor_m1, _predictor_m2, _predictor_m3, _predictor_m4, _active_model_name
+    with _model_lock:
+        if _active_model_name != "model4" or _predictor_m4 is None:
+            _predictor_m1 = None
+            _predictor_m2 = None
+            _predictor_m3 = None
+            gc.collect()
+            _predictor_m4 = Model4Predictor(str(MODEL4_PATH), device="cpu")
+            _active_model_name = "model4"
+            print(f"✅ Active model set to Model 4 (NoiseCNN)")
     return _predictor_m4
 
 def is_model1_ready():
