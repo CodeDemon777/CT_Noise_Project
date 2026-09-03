@@ -66,6 +66,19 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 # Enable Cross-Origin Resource Sharing for all origins (supports Vercel frontend)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        res = app.make_default_options_response()
+        res.headers["Access-Control-Allow-Origin"] = "*"
+        res.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        res.headers["Access-Control-Allow-Headers"] = "*"
+        return res
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "ok", "message": "LungCT AI Server is active"}), 200
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'bmp', 'tif', 'tiff', 'dcm'}
 
 def is_safe_image_file(filename: str) -> bool:
