@@ -67,6 +67,9 @@ export default function App() {
       });
 
       if (!response.ok) {
+        if (response.status === 502 || response.status === 503) {
+          throw new Error('Render Free Server is waking up from idle mode (takes ~20-30s on first request). Please retry in a few seconds!');
+        }
         const errJson = await response.json().catch(() => ({}));
         throw new Error(errJson.error || `Server responded with status ${response.status}`);
       }
@@ -93,6 +96,9 @@ export default function App() {
     try {
       const response = await fetch(resolveApiUrl(modelConfig.demoEndpoint));
       if (!response.ok) {
+        if (response.status === 502 || response.status === 503) {
+          throw new Error('Render Free Server is waking up from idle mode (takes ~20-30s on first request). Please retry in a few seconds!');
+        }
         const errJson = await response.json().catch(() => ({}));
         throw new Error(errJson.error || `Demo failed with status ${response.status}`);
       }
