@@ -152,6 +152,7 @@ def load_model(model_path: str, device: str = None) -> nn.Module:
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found: {model_path}")
     
+    import gc
     try:
         checkpoint = torch.load(model_path, map_location=device, weights_only=False)
     except TypeError:
@@ -162,21 +163,16 @@ def load_model(model_path: str, device: str = None) -> nn.Module:
     else:
         state_dict = checkpoint
 
+    del checkpoint
+    gc.collect()
+
     model = _build_model_from_state_dict(state_dict)
     model.load_state_dict(state_dict)
-    
-    # Move to device and set to eval mode
+
+    del state_dict
+    gc.collect()
+
     model = model.to(device)
     model.eval()
-    
-    print(f"✅ Model loaded from {model_path}")
-    print(f"📊 Device: {device}")
-    
+    print(f"✅ Model loaded from {model_path} on {device}")
     return model
-
-
-if __name__ == "__main__":
-    # Test model loading
-    model_path = Path(__file__).parent.parent / "model" / "best_model.pth"
-    model = load_model(str(model_path))
-    print(f"Model architecture:\n{model}")
